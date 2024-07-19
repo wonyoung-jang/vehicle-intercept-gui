@@ -4,6 +4,16 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PySide6.QtCore import Qt, QPointF
 from PySide6.QtGui import QColor, QPen
+
+class UnitConverter:
+    @staticmethod
+    def mph_to_mpm(mph):
+        return mph / 60
+
+    @staticmethod
+    def feet_to_miles(feet):
+        return feet / 5280
+
 class DroneInterceptWindow(QMainWindow):
     """
     1) Drone intercept problem
@@ -85,7 +95,7 @@ class DroneInterceptWindow(QMainWindow):
         Calculate the intercept point based on input parameters.
         Updates the UI with the result.
         """        
-        mins_drone_speed = self.drone_speed.value() / 60
+        mins_drone_speed = UnitConverter.mph_to_mpm(self.drone_speed.value())
         
         self.drone_speed_label.setText(f'Drone speed (mile per minute): {mins_drone_speed}')
         
@@ -267,7 +277,7 @@ class CarCollisionWindow(QWidget):
         # Series for Car B
         series_b = QLineSeries()
         series_b.setName("Car B")
-        initial_b_position = self.initial_distance.value() / 5280  # Convert feet to miles
+        initial_b_position = UnitConverter.feet_to_miles(self.initial_distance.value())
         series_b.append(0, initial_b_position)
         series_b.append(time_to_collision, initial_b_position + self.speed_car_b.value() * time_to_collision)
 

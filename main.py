@@ -1,11 +1,9 @@
 import sys
-import time
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
-                               QVBoxLayout, QHBoxLayout, QLabel, 
-                               QDoubleSpinBox, QPushButton, QTabWidget,
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
+                               QLabel, QDoubleSpinBox, QPushButton, QTabWidget,
                                QGroupBox, QFormLayout)
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from PySide6.QtCore import Qt, QPointF
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPen
 
 class UnitConverter:

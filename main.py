@@ -84,49 +84,36 @@ class DroneInterceptWindow(QWidget):
         self.calculate()
 
     def calculate(self):
-        """        
-        Calculate the intercept point based on input parameters.
-        Updates the UI with the result.
-        """        
         mins_drone_speed = UnitConverter.mph_to_mpm(self.drone_speed.value())
-        
-        self.drone_speed_label.setText(f'Drone speed (mile per minute): {mins_drone_speed}')
-        
+        self.drone_speed_label.setText(f'Drone speed (mile per minute): {mins_drone_speed:.4f}')
+
         miles_delay_distance = mins_drone_speed * self.reaction_time.value()
-        self.delay_distance_label.setText(f'Bad drone distance during delay (miles): {miles_delay_distance}')
+        self.delay_distance_label.setText(f'Bad drone distance during delay (miles): {miles_delay_distance:.4f}')
+
         intercept_distance = self.radar_range.value() - miles_delay_distance
         intercept_possible = miles_delay_distance < self.radar_range.value()
+
         if intercept_possible:
-            self.result_label.setText(f'Delay: We intercept the drone {intercept_distance:.2f} miles away')
+            self.result_label.setText(f'We intercept the drone {intercept_distance:.2f} miles away')
         else:
-            self.result_label.setText('We can\'t intercept the drone')
-        
-        # If delay distance < radar range  → intercept
-        if miles_delay_distance < self.radar_range.value():
-            self.result_label.setText(f'Delay: We intercept the drone {intercept_distance} miles away')
-        else:
-            self.result_label.setText(f'We can\'t intercept the drone')
-            
-            # Suggestions
-            suggestions = ['Suggestions']
-            
-            # Decrease drone speed
-            required_drone_speed = self.radar_range.value() / self.reaction_time.value()
-            required_drone_speed *= 60
-            suggestions.append(f'Decrease drone speed to less than {required_drone_speed} mph')
-            
-            # Decrease reaction time
-            required_reaction_time = self.radar_range.value() / mins_drone_speed
-            suggestions.append(f'Decrease reaction time to less than {required_reaction_time} minutes')
-            
-            # Increase radar range
-            required_radar_range = miles_delay_distance
-            suggestions.append(f'Increase radar range to more than {required_radar_range} miles')
-            
-            self.result_label.setText(self.result_label.text() + '\n' + '\n'.join(suggestions))        
-            
+            suggestions = self.generate_suggestions(mins_drone_speed, miles_delay_distance)
+            self.result_label.setText('We can\'t intercept the drone\n\n' + '\n'.join(suggestions))
+
         self.update_chart(mins_drone_speed, miles_delay_distance, intercept_possible)
-                
+
+    def generate_suggestions(self, mins_drone_speed, miles_delay_distance):
+        suggestions = ['Suggestions:']
+        required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
+        suggestions.append(f'Decrease drone speed to less than {required_drone_speed:.2f} mph')
+
+        required_reaction_time = self.radar_range.value() / mins_drone_speed
+        suggestions.append(f'Decrease reaction time to less than {required_reaction_time:.2f} minutes')
+
+        required_radar_range = miles_delay_distance
+        suggestions.append(f'Increase radar range to more than {required_radar_range:.2f} miles')
+
+        return suggestions
+                    
     def update_chart(self, mins_drone_speed, miles_delay_distance, intercept_possible):
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")
@@ -253,23 +240,23 @@ class CarCollisionWindow(QWidget):
 
     def calculate(self):
         speed_difference = self.speed_car_a.value() - self.speed_car_b.value()
-        
+
         if speed_difference <= 0:
             self.result_label.setText("The cars will never collide.")
             self.update_chart(0)
             return
-        
+
         # Convert speeds to feet per hour
         speed_difference_ft_per_hour = speed_difference * 5280
-        
+
         # Calculate time to collision in hours
         time_to_collision_hours = self.initial_distance.value() / speed_difference_ft_per_hour
-        
+
         # Convert time to minutes and seconds
         total_seconds = time_to_collision_hours * 3600
         minutes = int(total_seconds // 60)
         seconds = int(total_seconds % 60)
-        
+
         self.result_label.setText(f"The cars will collide in {minutes} minutes and {seconds} seconds.")
         self.update_chart(time_to_collision_hours)
         

@@ -68,6 +68,11 @@ class DroneInterceptWindow(QMainWindow):
         self.chart_view = QChartView()
         layout.addWidget(self.chart_view)
         
+        # Reset button
+        reset_button = QPushButton("Reset to Default")
+        reset_button.clicked.connect(self.reset_to_default)
+        layout.addWidget(reset_button)
+        
         # Signals and slots
         self.drone_speed.valueChanged.connect(self.calculate)
         self.radar_range.valueChanged.connect(self.calculate)
@@ -158,6 +163,12 @@ class DroneInterceptWindow(QMainWindow):
         drone_series.attachAxis(axis_y)
 
         self.chart_view.setChart(chart)
+    
+    def reset_to_default(self):
+        self.drone_speed.setValue(30)
+        self.radar_range.setValue(2)
+        self.reaction_time.setValue(5)
+        self.calculate()
         
 class CarCollisionWindow(QWidget):
     """
@@ -208,6 +219,11 @@ class CarCollisionWindow(QWidget):
         # Chart
         self.chart_view = QChartView()
         layout.addWidget(self.chart_view)
+        
+        # Reset button
+        reset_button = QPushButton("Reset to Default")
+        reset_button.clicked.connect(self.reset_to_default)
+        layout.addWidget(reset_button)
         
         # Signals and slots
         self.speed_car_a.valueChanged.connect(self.calculate)
@@ -272,6 +288,12 @@ class CarCollisionWindow(QWidget):
 
         self.chart_view.setChart(chart)
 
+    def reset_to_default(self):
+        self.speed_car_a.setValue(45)
+        self.speed_car_b.setValue(27)
+        self.initial_distance.setValue(200)
+        self.calculate()
+        
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()

@@ -52,11 +52,6 @@ class DroneInterceptWindow(QMainWindow):
         input_layout.addWidget(QLabel('Reaction time (min):'))
         input_layout.addWidget(self.reaction_time)
 
-        # Calculate button
-        self.calculate_button = QPushButton('Calculate')
-        self.calculate_button.clicked.connect(self.calculate)
-        layout.addWidget(self.calculate_button)
-
         # Result label
         self.result_label = QLabel('Result will be shown here')
         layout.addWidget(self.result_label)
@@ -66,6 +61,11 @@ class DroneInterceptWindow(QMainWindow):
         
         self.delay_distance_label = QLabel('Delay distance (miles):')
         layout.addWidget(self.delay_distance_label)
+        
+        # Signals and slots
+        self.drone_speed.valueChanged.connect(self.calculate)
+        self.radar_range.valueChanged.connect(self.calculate)
+        self.reaction_time.valueChanged.connect(self.calculate)
 
     def calculate(self):
         """        
@@ -146,14 +146,14 @@ class CarCollisionWindow(QWidget):
         input_layout.addWidget(QLabel('Initial distance (feet):'))
         input_layout.addWidget(self.initial_distance)
 
-        # Calculate button
-        self.calculate_button = QPushButton('Calculate')
-        self.calculate_button.clicked.connect(self.calculate)
-        layout.addWidget(self.calculate_button)
-
         # Result label
         self.result_label = QLabel('Result will be shown here')
         layout.addWidget(self.result_label)
+        
+        # Signals and slots
+        self.speed_car_a.valueChanged.connect(self.calculate)
+        self.speed_car_b.valueChanged.connect(self.calculate)
+        self.initial_distance.valueChanged.connect(self.calculate)
 
     def calculate(self):
         speed_difference = self.speed_car_a.value() - self.speed_car_b.value()

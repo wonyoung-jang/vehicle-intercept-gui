@@ -1,7 +1,9 @@
 import sys
 import time
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QDoubleSpinBox, QPushButton, QTabWidget
-
+from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
+from PySide6.QtCore import Qt, QPointF
+from PySide6.QtGui import QColor, QPen
 class DroneInterceptWindow(QMainWindow):
     """
     1) Drone intercept problem
@@ -62,10 +64,16 @@ class DroneInterceptWindow(QMainWindow):
         self.delay_distance_label = QLabel('Delay distance (miles):')
         layout.addWidget(self.delay_distance_label)
         
+        # Chart
+        self.chart_view = QChartView()
+        layout.addWidget(self.chart_view)
+        
         # Signals and slots
         self.drone_speed.valueChanged.connect(self.calculate)
         self.radar_range.valueChanged.connect(self.calculate)
         self.reaction_time.valueChanged.connect(self.calculate)
+        
+        self.calculate()
 
     def calculate(self):
         """        
@@ -79,6 +87,11 @@ class DroneInterceptWindow(QMainWindow):
         miles_delay_distance = mins_drone_speed * self.reaction_time.value()
         self.delay_distance_label.setText(f'Bad drone distance during delay (miles): {miles_delay_distance}')
         intercept_distance = self.radar_range.value() - miles_delay_distance
+        intercept_possible = miles_delay_distance < self.radar_range.value()
+        if intercept_possible:
+            self.result_label.setText(f'Delay: We intercept the drone {intercept_distance:.2f} miles away')
+        else:
+            self.result_label.setText('We can\'t intercept the drone')
         
         # If delay distance < radar range  → intercept
         if miles_delay_distance < self.radar_range.value():
@@ -103,6 +116,48 @@ class DroneInterceptWindow(QMainWindow):
             suggestions.append(f'Increase radar range to more than {required_radar_range} miles')
             
             self.result_label.setText(self.result_label.text() + '\n' + '\n'.join(suggestions))        
+            
+        self.update_chart(mins_drone_speed, miles_delay_distance, intercept_possible)
+                
+    def update_chart(self, mins_drone_speed, miles_delay_distance, intercept_possible):
+        chart = QChart()
+        chart.setTitle("Drone Intercept Visualization")
+
+        # Series for radar range
+        radar_series = QLineSeries()
+        radar_series.setName("Radar Range")
+        radar_series.append(0, self.radar_range.value())
+        radar_series.append(self.reaction_time.value(), self.radar_range.value())
+
+        # Series for drone position
+        drone_series = QLineSeries()
+        drone_series.setName("Drone Position")
+        drone_series.append(0, 0)
+        drone_series.append(self.reaction_time.value(), miles_delay_distance)
+
+        # Set colors based on intercept possibility
+        color = QColor(Qt.green) if intercept_possible else QColor(Qt.red)
+        pen = QPen(color)
+        pen.setWidth(3)
+        radar_series.setPen(pen)
+        drone_series.setPen(pen)
+
+        chart.addSeries(radar_series)
+        chart.addSeries(drone_series)
+
+        axis_x = QValueAxis()
+        axis_x.setTitleText("Time (minutes)")
+        chart.addAxis(axis_x, Qt.AlignBottom)
+        radar_series.attachAxis(axis_x)
+        drone_series.attachAxis(axis_x)
+
+        axis_y = QValueAxis()
+        axis_y.setTitleText("Distance (miles)")
+        chart.addAxis(axis_y, Qt.AlignLeft)
+        radar_series.attachAxis(axis_y)
+        drone_series.attachAxis(axis_y)
+
+        self.chart_view.setChart(chart)
         
 class CarCollisionWindow(QWidget):
     """
@@ -150,16 +205,23 @@ class CarCollisionWindow(QWidget):
         self.result_label = QLabel('Result will be shown here')
         layout.addWidget(self.result_label)
         
+        # Chart
+        self.chart_view = QChartView()
+        layout.addWidget(self.chart_view)
+        
         # Signals and slots
         self.speed_car_a.valueChanged.connect(self.calculate)
         self.speed_car_b.valueChanged.connect(self.calculate)
         self.initial_distance.valueChanged.connect(self.calculate)
+        
+        self.calculate()
 
     def calculate(self):
         speed_difference = self.speed_car_a.value() - self.speed_car_b.value()
         
         if speed_difference <= 0:
             self.result_label.setText("The cars will never collide.")
+            self.update_chart(0)
             return
         
         # Convert speeds to feet per hour
@@ -174,6 +236,41 @@ class CarCollisionWindow(QWidget):
         seconds = int(total_seconds % 60)
         
         self.result_label.setText(f"The cars will collide in {minutes} minutes and {seconds} seconds.")
+        self.update_chart(time_to_collision_hours)
+        
+    def update_chart(self, time_to_collision):
+        chart = QChart()
+        chart.setTitle("Car Collision Visualization")
+
+        # Series for Car A
+        series_a = QLineSeries()
+        series_a.setName("Car A")
+        series_a.append(0, 0)
+        series_a.append(time_to_collision, self.speed_car_a.value() * time_to_collision)
+
+        # Series for Car B
+        series_b = QLineSeries()
+        series_b.setName("Car B")
+        initial_b_position = self.initial_distance.value() / 5280  # Convert feet to miles
+        series_b.append(0, initial_b_position)
+        series_b.append(time_to_collision, initial_b_position + self.speed_car_b.value() * time_to_collision)
+
+        chart.addSeries(series_a)
+        chart.addSeries(series_b)
+
+        axis_x = QValueAxis()
+        axis_x.setTitleText("Time (hours)")
+        chart.addAxis(axis_x, Qt.AlignBottom)
+        series_a.attachAxis(axis_x)
+        series_b.attachAxis(axis_x)
+
+        axis_y = QValueAxis()
+        axis_y.setTitleText("Distance (miles)")
+        chart.addAxis(axis_y, Qt.AlignLeft)
+        series_a.attachAxis(axis_y)
+        series_b.attachAxis(axis_y)
+
+        self.chart_view.setChart(chart)
 
 class MainWindow(QMainWindow):
     def __init__(self):

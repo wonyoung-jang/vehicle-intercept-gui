@@ -14,7 +14,7 @@ class UnitConverter:
     def feet_to_miles(feet):
         return feet / 5280
 
-class DroneInterceptWindow(QMainWindow):
+class DroneInterceptWindow(QWidget):
     """
     1) Drone intercept problem
     - Radar intercept capability is 2 miles
@@ -23,16 +23,13 @@ class DroneInterceptWindow(QMainWindow):
     - How far away do we intercept the drone?
     - What can we do to intercept the drone?
     """
-    
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Drone intercept problem')
-
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-
+        self.init_ui()
+        
+    def init_ui(self):
         layout = QVBoxLayout()
-        central_widget.setLayout(layout)
+        self.setLayout(layout)
 
         # Input fields
         input_layout = QHBoxLayout()
@@ -132,9 +129,9 @@ class DroneInterceptWindow(QMainWindow):
             
             self.result_label.setText(self.result_label.text() + '\n' + '\n'.join(suggestions))        
             
-        self.update_chart(mins_drone_speed, miles_delay_distance, intercept_possible)
+        self.update_chart(miles_delay_distance, intercept_possible)
                 
-    def update_chart(self, mins_drone_speed, miles_delay_distance, intercept_possible):
+    def update_chart(self, miles_delay_distance, intercept_possible):
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")
 
@@ -188,9 +185,11 @@ class CarCollisionWindow(QWidget):
     - Car B is traveling in the same lane 200 feet in front of Car A
     - How long until the cars collide?    
     """
-    
     def __init__(self):
         super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
         layout = QVBoxLayout()
         self.setLayout(layout)
 

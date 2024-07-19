@@ -1,6 +1,9 @@
 import sys
 import time
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QDoubleSpinBox, QPushButton, QTabWidget
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
+                               QVBoxLayout, QHBoxLayout, QLabel, 
+                               QDoubleSpinBox, QPushButton, QTabWidget,
+                               QGroupBox, QFormLayout)
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PySide6.QtCore import Qt, QPointF
 from PySide6.QtGui import QColor, QPen
@@ -32,44 +35,39 @@ class DroneInterceptWindow(QWidget):
         self.setLayout(layout)
 
         # Input fields
-        input_layout = QHBoxLayout()
-        layout.addLayout(input_layout)
-        
+        input_group = QGroupBox("Input Parameters")
+        input_layout = QFormLayout(input_group)
+
         self.drone_speed = QDoubleSpinBox()
         self.drone_speed.setValue(30)
-        
+        self.drone_speed.setRange(1, 1000)
+
         self.radar_range = QDoubleSpinBox()
         self.radar_range.setValue(2)
-        
+        self.radar_range.setRange(1, 100)
+
         self.reaction_time = QDoubleSpinBox()
         self.reaction_time.setValue(5)
-
-        # Set ranges for input fields
-        self.drone_speed.setRange(1, 1000)
         self.reaction_time.setRange(0, 60)
-        self.radar_range.setRange(1, 100)
-        
-        # Drone
-        input_layout.addWidget(QLabel('Drone speed (mph):'))
-        input_layout.addWidget(self.drone_speed)
 
-        # Radar range
-        input_layout.addWidget(QLabel('Radar range (miles):'))
-        input_layout.addWidget(self.radar_range)
-        
-        # Reaction time
-        input_layout.addWidget(QLabel('Reaction time (min):'))
-        input_layout.addWidget(self.reaction_time)
+        input_layout.addRow("Drone speed (mph):", self.drone_speed)
+        input_layout.addRow("Radar range (miles):", self.radar_range)
+        input_layout.addRow("Reaction time (min):", self.reaction_time)
 
-        # Result label
+        layout.addWidget(input_group)
+        
+        # Result labels
         self.result_label = QLabel('Result will be shown here')
-        layout.addWidget(self.result_label)
-
         self.drone_speed_label = QLabel('Drone speed (mile per minute):')
-        layout.addWidget(self.drone_speed_label)
-        
         self.delay_distance_label = QLabel('Delay distance (miles):')
-        layout.addWidget(self.delay_distance_label)
+
+        result_group = QGroupBox("Results")
+        result_layout = QVBoxLayout(result_group)
+        result_layout.addWidget(self.result_label)
+        result_layout.addWidget(self.drone_speed_label)
+        result_layout.addWidget(self.delay_distance_label)
+
+        layout.addWidget(result_group)
         
         # Chart
         self.chart_view = QChartView()
@@ -194,36 +192,34 @@ class CarCollisionWindow(QWidget):
         self.setLayout(layout)
 
         # Input fields
-        input_layout = QHBoxLayout()
-        layout.addLayout(input_layout)
-        
+        input_group = QGroupBox("Input Parameters")
+        input_layout = QFormLayout(input_group)
+
         self.speed_car_a = QDoubleSpinBox()
         self.speed_car_a.setValue(45)
         self.speed_car_a.setRange(0, 200)
-        
+
         self.speed_car_b = QDoubleSpinBox()
         self.speed_car_b.setValue(27)
         self.speed_car_b.setRange(0, 200)
-        
+
         self.initial_distance = QDoubleSpinBox()
         self.initial_distance.setValue(200)
         self.initial_distance.setRange(0, 1000)
 
-        # Car A speed
-        input_layout.addWidget(QLabel('Car A speed (mph):'))
-        input_layout.addWidget(self.speed_car_a)
+        input_layout.addRow("Car A speed (mph):", self.speed_car_a)
+        input_layout.addRow("Car B speed (mph):", self.speed_car_b)
+        input_layout.addRow("Initial distance (feet):", self.initial_distance)
 
-        # Car B speed
-        input_layout.addWidget(QLabel('Car B speed (mph):'))
-        input_layout.addWidget(self.speed_car_b)
-        
-        # Initial distance
-        input_layout.addWidget(QLabel('Initial distance (feet):'))
-        input_layout.addWidget(self.initial_distance)
+        layout.addWidget(input_group)
 
         # Result label
         self.result_label = QLabel('Result will be shown here')
-        layout.addWidget(self.result_label)
+        result_group = QGroupBox("Results")
+        result_layout = QVBoxLayout(result_group)
+        result_layout.addWidget(self.result_label)
+
+        layout.addWidget(result_group)
         
         # Chart
         self.chart_view = QChartView()

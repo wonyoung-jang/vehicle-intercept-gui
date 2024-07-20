@@ -9,6 +9,9 @@ This is an interactive Python application for simulating a drone interception pr
 - [Usage](#usage)
 - [License](#license)
 
+## Background
+
+I was haunted by these two problems after my brain short circuited while solving them on paper for an interview, and I haven't created anything with Qt in a while, so I made this for some practice.
 
 ## Features
 
@@ -33,11 +36,8 @@ This is an interactive Python application for simulating a drone interception pr
 ## Usage
 
 1. Run the application:
-
     `python main.py`
-
 2. Use the tabs to switch between simulations. 
-
 3. Adjust parameters using the spinboxes.
 
 ## License

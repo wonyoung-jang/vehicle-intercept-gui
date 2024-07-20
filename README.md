@@ -16,11 +16,14 @@ I was haunted by these two problems after my brain short circuited while solving
 ## Features
 
 ### Drone Intercept
+![](assets/screenshot-drone-intercept.webp)
 - Parameters: drone speed, radar range, and reaction time
 - Calculates interception possibilities for drones
 - Gives suggestions for successful interception when not possible
 
+
 ### Car Collision
+![](assets/screenshot-car-collision.webp)
 - Parameters: speeds of both cars and initial distance between them
 - Calculates time until collision for two cars
 

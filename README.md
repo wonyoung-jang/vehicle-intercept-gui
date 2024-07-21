@@ -1,4 +1,4 @@
-# Vehicle Interception Calculator
+# Vehicle Interception Solver
 
 This is an interactive Python application for simulating a drone interception problem and a car collision problem. PySide6 is used to create the GUI with dynamic visualizations.
 

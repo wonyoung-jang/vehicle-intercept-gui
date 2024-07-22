@@ -25,10 +25,16 @@ class DroneInterceptWindow(QWidget):
     - What can we do to intercept the drone?
     """
     def __init__(self):
+        """
+        Initialize the window
+        """
         super().__init__()
         self.init_ui()
         
     def init_ui(self):
+        """
+        Initialize the UI
+        """
         layout = QVBoxLayout()
         self.setLayout(layout)
 
@@ -84,6 +90,9 @@ class DroneInterceptWindow(QWidget):
         self.calculate()
 
     def calculate(self):
+        """
+        Calculate the distance to intercept the drone
+        """
         mins_drone_speed = UnitConverter.mph_to_mpm(self.drone_speed.value())
         self.drone_speed_label.setText(f'Drone speed (mile per minute): {mins_drone_speed:.4f}')
 
@@ -102,6 +111,9 @@ class DroneInterceptWindow(QWidget):
         self.update_chart(mins_drone_speed, miles_delay_distance, intercept_possible)
 
     def generate_suggestions(self, mins_drone_speed, miles_delay_distance):
+        """
+        Generate suggestions for intercepting the drone
+        """
         suggestions = ['Suggestions:']
         required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
         suggestions.append(f'Decrease drone speed to less than {required_drone_speed:.2f} mph')
@@ -115,8 +127,12 @@ class DroneInterceptWindow(QWidget):
         return suggestions
                     
     def update_chart(self, mins_drone_speed, miles_delay_distance, intercept_possible):
+        """
+        Update the chart with the new intercept distance
+        """
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")
+        max_time = max(self.reaction_time.value() * 2, self.radar_range.value() / mins_drone_speed)
 
         # Series for radar range
         radar_series = QLineSeries()
@@ -128,9 +144,9 @@ class DroneInterceptWindow(QWidget):
         drone_series = QLineSeries()
         drone_series.setName("Drone Position")
         drone_series.append(0, 0)
-        max_time = max(self.reaction_time.value() * 2, self.radar_range.value() / mins_drone_speed)
         drone_series.append(max_time, max_time * mins_drone_speed)
-                
+        max_distance = max(self.radar_range.value(), mins_drone_speed * max_time)
+
         # Intercept point
         intercept_series = QScatterSeries()
         intercept_series.setName("Intercept Point")
@@ -150,27 +166,39 @@ class DroneInterceptWindow(QWidget):
         chart.addSeries(radar_series)
         chart.addSeries(drone_series)
         chart.addSeries(intercept_series)
-
+        
+        # Create and configure x-axis
         axis_x = QValueAxis()
         axis_x.setTitleText("Time (minutes)")
-        axis_x.setRange(0, max_time * 1.1)
-        chart.addAxis(axis_x, Qt.AlignBottom)
-        radar_series.attachAxis(axis_x)
-        drone_series.attachAxis(axis_x)
-        intercept_series.attachAxis(axis_x)
+        axis_x.setRange(0, max_time)
+        axis_x.setTickCount(10)
+        axis_x.setGridLineVisible(True)
 
+        # Create and configure y-axis
         axis_y = QValueAxis()
-        axis_y.setTitleText("Distance (miles)")
-        max_distance = max(self.radar_range.value(), max_time * mins_drone_speed)
-        axis_y.setRange(0, max_distance * 1.1)
+        axis_y.setTitleText("Distance (meters)")
+        axis_y.setRange(0, max_distance)
+        axis_y.setTickCount(10)
+        axis_y.setGridLineVisible(True)
+
+        # Add axes to the chart
+        chart.addAxis(axis_x, Qt.AlignBottom)
         chart.addAxis(axis_y, Qt.AlignLeft)
+        
+        # Attach series to the axes
+        radar_series.attachAxis(axis_x)
         radar_series.attachAxis(axis_y)
+        drone_series.attachAxis(axis_x)
         drone_series.attachAxis(axis_y)
+        intercept_series.attachAxis(axis_x)
         intercept_series.attachAxis(axis_y)
 
         self.chart_view.setChart(chart)
     
     def reset_to_default(self):
+        """
+        Reset input fields to default values
+        """
         self.drone_speed.setValue(30)
         self.radar_range.setValue(2)
         self.reaction_time.setValue(5)
@@ -185,10 +213,16 @@ class CarCollisionWindow(QWidget):
     - How long until the cars collide?    
     """
     def __init__(self):
+        """
+        Initialize the window
+        """
         super().__init__()
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initialize the UI
+        """
         layout = QVBoxLayout()
         self.setLayout(layout)
 
@@ -239,6 +273,9 @@ class CarCollisionWindow(QWidget):
         self.calculate()
 
     def calculate(self):
+        """
+        Calculate the time until the cars collide
+        """
         speed_difference = self.speed_car_a.value() - self.speed_car_b.value()
 
         if speed_difference <= 0:
@@ -261,10 +298,13 @@ class CarCollisionWindow(QWidget):
         self.update_chart(time_to_collision_hours)
         
     def update_chart(self, time_to_collision):
+        """
+        Update the chart with the new time to collision
+        """
         chart = QChart()
         chart.setTitle("Car Collision Visualization")
         max_time = time_to_collision * 1.5 if time_to_collision > 0 else 1
-        
+
         # Series for Car A
         series_a = QLineSeries()
         series_a.setName("Car A")
@@ -277,44 +317,57 @@ class CarCollisionWindow(QWidget):
         initial_b_position = UnitConverter.feet_to_miles(self.initial_distance.value())
         series_b.append(0, initial_b_position)
         series_b.append(max_time, initial_b_position + self.speed_car_b.value() * max_time)
-        
+        max_distance = max(self.speed_car_a.value() * max_time, 
+            initial_b_position + self.speed_car_b.value() * max_time)
+
         # Collision point
         collision_series = QScatterSeries()
         collision_series.setName("Collision Point")
         if time_to_collision > 0:
             collision_series.append(time_to_collision, self.speed_car_a.value() * time_to_collision)
-            
-        chart.addSeries(series_a)
-        chart.addSeries(series_b)
-        chart.addSeries(collision_series)
-
-        axis_x = QValueAxis()
-        axis_x.setTitleText("Time (hours)")
-        axis_x.setRange(0, max_time)
-        chart.addAxis(axis_x, Qt.AlignBottom)
-        series_a.attachAxis(axis_x)
-        series_b.attachAxis(axis_x)
-        collision_series.attachAxis(axis_x)
-
-        axis_y = QValueAxis()
-        axis_y.setTitleText("Distance (miles)")
-        max_distance = max(self.speed_car_a.value() * max_time, 
-                    initial_b_position + self.speed_car_b.value() * max_time)
-        axis_y.setRange(0, max_distance * 1.1)
-        chart.addAxis(axis_y, Qt.AlignLeft)
-        series_a.attachAxis(axis_y)
-        series_b.attachAxis(axis_y)
-        collision_series.attachAxis(axis_y)
         
         # Set colors
         series_a.setPen(QPen(QColor(Qt.blue), 2))
         series_b.setPen(QPen(QColor(Qt.red), 2))
         collision_series.setColor(QColor(Qt.green))
         collision_series.setMarkerSize(15)
+        
+        chart.addSeries(series_a)
+        chart.addSeries(series_b)
+        chart.addSeries(collision_series)
+        
+        # Create and configure x-axis
+        axis_x = QValueAxis()
+        axis_x.setTitleText("Time (hours)")
+        axis_x.setRange(0, max_time)
+        axis_x.setTickCount(10)
+        axis_x.setGridLineVisible(True)
+
+        chart.addAxis(axis_x, Qt.AlignBottom)
+
+        # Create and configure y-axis
+        axis_y = QValueAxis()
+        axis_y.setTitleText("Distance (miles)")
+        axis_y.setRange(0, max_distance)
+        axis_y.setTickCount(10)
+        axis_y.setGridLineVisible(True)
+
+        chart.addAxis(axis_y, Qt.AlignLeft)
+        
+        # Attach series to the axes
+        series_a.attachAxis(axis_x)
+        series_b.attachAxis(axis_x)
+        collision_series.attachAxis(axis_x)
+        series_a.attachAxis(axis_y)
+        series_b.attachAxis(axis_y)
+        collision_series.attachAxis(axis_y)
 
         self.chart_view.setChart(chart)
 
     def reset_to_default(self):
+        """
+        Reset input fields to default values
+        """
         self.speed_car_a.setValue(45)
         self.speed_car_b.setValue(27)
         self.initial_distance.setValue(200)
@@ -322,6 +375,9 @@ class CarCollisionWindow(QWidget):
         
 class MainWindow(QMainWindow):
     def __init__(self):
+        """
+        Main window with two tabs for the two problems
+        """
         super().__init__()
         self.setWindowTitle('Two problems')
 

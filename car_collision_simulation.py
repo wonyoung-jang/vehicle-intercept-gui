@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 
 class CarCollisionSimulation(QWidget):
@@ -47,17 +48,21 @@ class CarCollisionSimulation(QWidget):
         # Car A series
         self.car_a_series = QLineSeries()
         self.car_a_series.setName("Car A")
+        self.car_a_series.setPen(QPen(QColor(Qt.blue), 2))
 
         # Car B series
         self.car_b_series = QLineSeries()
         self.car_b_series.setName("Car B")
+        self.car_b_series.setPen(QPen(QColor(Qt.red), 2))
 
         self.chart.addSeries(self.car_a_series)
         self.chart.addSeries(self.car_b_series)
 
         # Set up axes
         self.axis_x = QValueAxis()
+        self.axis_x.setTitleText("Time (hours)")
         self.axis_y = QValueAxis()
+        self.axis_y.setTitleText("Distance (miles)" if self.units == "mph" else "Distance (km)")
         self.chart.addAxis(self.axis_x, Qt.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)
 
@@ -70,20 +75,17 @@ class CarCollisionSimulation(QWidget):
 
     def update_simulation(self):
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
-        self.time += 0.05 * speed_factor  # 0.05 seconds per frame at normal speed
+        self.time += 0.001 * speed_factor  # 0.001 hours (3.6 seconds) per frame at normal speed
 
         # Update car positions
         if self.units == "mph":
-            car_a_position = UnitConverter.mph_to_mpm(self.speed_car_a) * self.time
-            car_b_position = UnitConverter.feet_to_miles(self.initial_distance) + UnitConverter.mph_to_mpm(self.speed_car_b) * self.time
+            car_a_position = self.speed_car_a * self.time
+            car_b_position = UnitConverter.feet_to_miles(self.initial_distance) + self.speed_car_b * self.time
         else:
-            car_a_position = UnitConverter.kmh_to_kpm(self.speed_car_a) * self.time
-            car_b_position = UnitConverter.feet_to_km(self.initial_distance) + UnitConverter.kmh_to_kpm(self.speed_car_b) * self.time
+            car_a_position = self.speed_car_a * self.time
+            car_b_position = UnitConverter.feet_to_km(self.initial_distance) + self.speed_car_b * self.time
 
-        self.car_a_series.clear()
         self.car_a_series.append(self.time, car_a_position)
-
-        self.car_b_series.clear()
         self.car_b_series.append(self.time, car_b_position)
 
         # Adjust axes
@@ -95,6 +97,8 @@ class CarCollisionSimulation(QWidget):
             self.timer.stop()
             collision_point = QScatterSeries()
             collision_point.append(self.time, car_a_position)
+            collision_point.setMarkerSize(10)
+            collision_point.setColor(QColor(Qt.green))
             self.chart.addSeries(collision_point)
             collision_point.attachAxis(self.axis_x)
             collision_point.attachAxis(self.axis_y)

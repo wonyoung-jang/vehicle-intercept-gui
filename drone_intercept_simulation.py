@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 
 class DroneInterceptSimulation(QWidget):
@@ -44,34 +45,29 @@ class DroneInterceptSimulation(QWidget):
         self.chart = QChart()
         self.chart.setTitle("Drone Intercept Simulation")
 
-        # Radar range line
-        self.radar_series = QLineSeries()
-        self.radar_series.setName("Radar Range")
-        self.radar_series.append(0, self.radar_range)
-        self.radar_series.append(self.reaction_time * 2, self.radar_range)
-
-        # Drone position series
-        self.drone_series = QLineSeries()
-        self.drone_series.setName("Drone Position")
+        # Enemy drone series
+        self.enemy_drone_series = QLineSeries()
+        self.enemy_drone_series.setName("Enemy Drone")
+        self.enemy_drone_series.setPen(QPen(QColor(Qt.red), 2))
 
         # Our drone series
         self.our_drone_series = QLineSeries()
         self.our_drone_series.setName("Our Drone")
+        self.our_drone_series.setPen(QPen(QColor(Qt.blue), 2))
 
-        self.chart.addSeries(self.radar_series)
-        self.chart.addSeries(self.drone_series)
+        self.chart.addSeries(self.enemy_drone_series)
         self.chart.addSeries(self.our_drone_series)
 
         # Set up axes
         self.axis_x = QValueAxis()
+        self.axis_x.setTitleText("Time (minutes)")
         self.axis_y = QValueAxis()
+        self.axis_y.setTitleText("Distance (miles)" if self.units == "mph" else "Distance (km)")
         self.chart.addAxis(self.axis_x, Qt.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)
 
-        self.radar_series.attachAxis(self.axis_x)
-        self.radar_series.attachAxis(self.axis_y)
-        self.drone_series.attachAxis(self.axis_x)
-        self.drone_series.attachAxis(self.axis_y)
+        self.enemy_drone_series.attachAxis(self.axis_x)
+        self.enemy_drone_series.attachAxis(self.axis_y)
         self.our_drone_series.attachAxis(self.axis_x)
         self.our_drone_series.attachAxis(self.axis_y)
 
@@ -79,31 +75,30 @@ class DroneInterceptSimulation(QWidget):
 
     def update_simulation(self):
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
-        self.time += 0.05 * speed_factor  # 0.05 seconds per frame at normal speed
+        self.time += 0.05 * speed_factor  # 0.05 minutes per frame at normal speed
 
         # Update drone positions
         if self.units == "mph":
-            drone_position = UnitConverter.mph_to_mpm(self.drone_speed) * self.time
+            enemy_drone_position = self.radar_range - UnitConverter.mph_to_mpm(self.drone_speed) * self.time
             our_drone_position = max(0, UnitConverter.mph_to_mpm(self.drone_speed) * (self.time - self.reaction_time))
         else:
-            drone_position = UnitConverter.kmh_to_kpm(self.drone_speed) * self.time
+            enemy_drone_position = self.radar_range - UnitConverter.kmh_to_kpm(self.drone_speed) * self.time
             our_drone_position = max(0, UnitConverter.kmh_to_kpm(self.drone_speed) * (self.time - self.reaction_time))
 
-        self.drone_series.clear()
-        self.drone_series.append(self.time, drone_position)
-
-        self.our_drone_series.clear()
+        self.enemy_drone_series.append(self.time, enemy_drone_position)
         self.our_drone_series.append(self.time, our_drone_position)
 
         # Adjust axes
-        self.axis_x.setRange(0, max(self.time, self.reaction_time * 2))
-        self.axis_y.setRange(0, max(self.radar_range, drone_position, our_drone_position))
+        self.axis_x.setRange(0, self.time)
+        self.axis_y.setRange(0, self.radar_range)
 
         # Check for interception
-        if our_drone_position >= drone_position and drone_position <= self.radar_range:
+        if our_drone_position >= enemy_drone_position:
             self.timer.stop()
             intercept_point = QScatterSeries()
-            intercept_point.append(self.time, drone_position)
+            intercept_point.append(self.time, enemy_drone_position)
+            intercept_point.setMarkerSize(10)
+            intercept_point.setColor(QColor(Qt.green))
             self.chart.addSeries(intercept_point)
             intercept_point.attachAxis(self.axis_x)
             intercept_point.attachAxis(self.axis_y)

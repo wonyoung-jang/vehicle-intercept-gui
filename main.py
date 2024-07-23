@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                                QLabel, QDoubleSpinBox, QPushButton, QTabWidget,
-                               QGroupBox, QFormLayout)
+                               QComboBox, QGroupBox, QFormLayout)
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPen
@@ -10,6 +10,14 @@ class UnitConverter:
     @staticmethod
     def mph_to_mpm(mph):
         return mph / 60
+    
+    @staticmethod
+    def kmh_to_kpm(kmh):
+        return kmh / 60
+    
+    @staticmethod
+    def feet_to_km(feet):
+        return feet * 0.0003048
 
     @staticmethod
     def feet_to_miles(feet):
@@ -53,10 +61,16 @@ class DroneInterceptWindow(QWidget):
         self.reaction_time = QDoubleSpinBox()
         self.reaction_time.setValue(5)
         self.reaction_time.setRange(0, 60)
+        
+        self.unit_combo = QComboBox()
+        self.unit_combo.addItems(["mph", "km/h"])
+        self.unit_combo.currentIndexChanged.connect(self.update_units)
 
-        input_layout.addRow("Drone speed (mph):", self.drone_speed)
-        input_layout.addRow("Radar range (miles):", self.radar_range)
+        input_layout.addRow("Drone speed:", self.drone_speed)
+        input_layout.addRow("Radar range:", self.radar_range)
         input_layout.addRow("Reaction time (min):", self.reaction_time)
+        input_layout.addRow("Units:", self.unit_combo)
+
 
         layout.addWidget(input_group)
         
@@ -93,40 +107,54 @@ class DroneInterceptWindow(QWidget):
         """
         Calculate the distance to intercept the drone
         """
-        mins_drone_speed = UnitConverter.mph_to_mpm(self.drone_speed.value())
-        self.drone_speed_label.setText(f'Drone speed (mile per minute): {mins_drone_speed:.4f}')
-
-        miles_delay_distance = mins_drone_speed * self.reaction_time.value()
-        self.delay_distance_label.setText(f'Bad drone distance during delay (miles): {miles_delay_distance:.4f}')
-
-        intercept_distance = self.radar_range.value() - miles_delay_distance
-        intercept_possible = miles_delay_distance < self.radar_range.value()
+        units = self.unit_combo.currentText()
+        if units == "mph":
+            mins_drone_speed = UnitConverter.mph_to_mpm(self.drone_speed.value())
+            self.drone_speed_label.setText(f'Drone speed (mile per minute): {mins_drone_speed:.4f}')
+            miles_delay_distance = mins_drone_speed * self.reaction_time.value()
+            self.delay_distance_label.setText(f'Bad drone distance during delay (miles): {miles_delay_distance:.4f}')
+            intercept_distance = self.radar_range.value() - miles_delay_distance
+            intercept_possible = miles_delay_distance < self.radar_range.value()
+            distance_unit = "miles"
+        else:
+            mins_drone_speed = UnitConverter.kmh_to_kpm(self.drone_speed.value())
+            self.drone_speed_label.setText(f'Drone speed (kilometer per minute): {mins_drone_speed:.4f}')
+            km_delay_distance = mins_drone_speed * self.reaction_time.value()
+            self.delay_distance_label.setText(f'Bad drone distance during delay (kilometers): {km_delay_distance:.4f}')
+            intercept_distance = self.radar_range.value() - km_delay_distance
+            intercept_possible = km_delay_distance < self.radar_range.value()
+            distance_unit = "kilometers"
 
         if intercept_possible:
-            self.result_label.setText(f'We intercept the drone {intercept_distance:.2f} miles away')
+            self.result_label.setText(f'We intercept the drone {intercept_distance:.2f} {distance_unit} away')
         else:
-            suggestions = self.generate_suggestions(mins_drone_speed, miles_delay_distance)
+            suggestions = self.generate_suggestions(mins_drone_speed, intercept_distance, distance_unit)
             self.result_label.setText('We can\'t intercept the drone\n\n' + '\n'.join(suggestions))
 
-        self.update_chart(mins_drone_speed, miles_delay_distance, intercept_possible)
+        self.update_chart(mins_drone_speed, intercept_distance, intercept_possible, distance_unit)
 
-    def generate_suggestions(self, mins_drone_speed, miles_delay_distance):
+    def generate_suggestions(self, mins_drone_speed, intercept_distance, distance_unit):
         """
         Generate suggestions for intercepting the drone
         """
         suggestions = ['Suggestions:']
-        required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
-        suggestions.append(f'Decrease drone speed to less than {required_drone_speed:.2f} mph')
+        units = self.unit_combo.currentText()
+        if units == "mph":
+            required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
+            suggestions.append(f'Decrease drone speed to less than {required_drone_speed:.2f} mph')
+        else:
+            required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
+            suggestions.append(f'Decrease drone speed to less than {required_drone_speed:.2f} km/h')
 
         required_reaction_time = self.radar_range.value() / mins_drone_speed
         suggestions.append(f'Decrease reaction time to less than {required_reaction_time:.2f} minutes')
 
-        required_radar_range = miles_delay_distance
-        suggestions.append(f'Increase radar range to more than {required_radar_range:.2f} miles')
+        required_radar_range = intercept_distance
+        suggestions.append(f'Increase radar range to more than {required_radar_range:.2f} {distance_unit}')
 
         return suggestions
                     
-    def update_chart(self, mins_drone_speed, miles_delay_distance, intercept_possible):
+    def update_chart(self, mins_drone_speed, intercept_distance, intercept_possible, distance_unit):
         """
         Update the chart with the new intercept distance
         """
@@ -151,7 +179,7 @@ class DroneInterceptWindow(QWidget):
         intercept_series = QScatterSeries()
         intercept_series.setName("Intercept Point")
         if intercept_possible:
-            intercept_time = (self.radar_range.value() - miles_delay_distance) / mins_drone_speed
+            intercept_time = (self.radar_range.value() - intercept_distance) / mins_drone_speed
             intercept_series.append(intercept_time, self.radar_range.value())
 
         # Set colors based on intercept possibility
@@ -176,7 +204,7 @@ class DroneInterceptWindow(QWidget):
 
         # Create and configure y-axis
         axis_y = QValueAxis()
-        axis_y.setTitleText("Distance (meters)")
+        axis_y.setTitleText(f"Distance ({distance_unit})")
         axis_y.setRange(0, max_distance)
         axis_y.setTickCount(10)
         axis_y.setGridLineVisible(True)
@@ -195,6 +223,23 @@ class DroneInterceptWindow(QWidget):
 
         self.chart_view.setChart(chart)
     
+    def update_units(self):
+        """
+        Update the units of the input fields and result labels
+        """
+        units = self.unit_combo.currentText()
+        if units == "mph":
+            self.drone_speed.setValue(self.drone_speed.value() * 1.60934)
+            self.radar_range.setValue(self.radar_range.value() * 1.60934)
+            self.drone_speed_label.setText('Drone speed (mile per minute):')
+            self.delay_distance_label.setText('Delay distance (miles):')
+        else:
+            self.drone_speed.setValue(self.drone_speed.value() / 1.60934)
+            self.radar_range.setValue(self.radar_range.value() / 1.60934)
+            self.drone_speed_label.setText('Drone speed (kilometer per minute):')
+            self.delay_distance_label.setText('Delay distance (kilometers):')
+        self.calculate()
+        
     def reset_to_default(self):
         """
         Reset input fields to default values
@@ -242,9 +287,14 @@ class CarCollisionWindow(QWidget):
         self.initial_distance.setValue(200)
         self.initial_distance.setRange(0, 1000)
 
-        input_layout.addRow("Car A speed (mph):", self.speed_car_a)
-        input_layout.addRow("Car B speed (mph):", self.speed_car_b)
+        self.unit_combo = QComboBox()
+        self.unit_combo.addItems(["mph", "km/h"])
+        self.unit_combo.currentIndexChanged.connect(self.update_units)
+
+        input_layout.addRow("Car A speed:", self.speed_car_a)
+        input_layout.addRow("Car B speed:", self.speed_car_b)
         input_layout.addRow("Initial distance (feet):", self.initial_distance)
+        input_layout.addRow("Units:", self.unit_combo)
 
         layout.addWidget(input_group)
 
@@ -276,18 +326,26 @@ class CarCollisionWindow(QWidget):
         """
         Calculate the time until the cars collide
         """
-        speed_difference = self.speed_car_a.value() - self.speed_car_b.value()
+        units = self.unit_combo.currentText()
+        if units == "mph":
+            speed_difference = self.speed_car_a.value() - self.speed_car_b.value()
+            initial_distance_miles = UnitConverter.feet_to_miles(self.initial_distance.value())
+            distance_unit = "miles"
+        else:
+            speed_difference = (self.speed_car_a.value() * 1.60934) - (self.speed_car_b.value() * 1.60934)
+            initial_distance_miles = UnitConverter.feet_to_km(self.initial_distance.value())
+            distance_unit = "kilometers"
 
         if speed_difference <= 0:
             self.result_label.setText("The cars will never collide.")
-            self.update_chart(0)
+            self.update_chart(0, distance_unit)
             return
 
         # Convert speeds to feet per hour
         speed_difference_ft_per_hour = speed_difference * 5280
 
         # Calculate time to collision in hours
-        time_to_collision_hours = self.initial_distance.value() / speed_difference_ft_per_hour
+        time_to_collision_hours = initial_distance_miles / speed_difference_ft_per_hour
 
         # Convert time to minutes and seconds
         total_seconds = time_to_collision_hours * 3600
@@ -295,9 +353,9 @@ class CarCollisionWindow(QWidget):
         seconds = int(total_seconds % 60)
 
         self.result_label.setText(f"The cars will collide in {minutes} minutes and {seconds} seconds.")
-        self.update_chart(time_to_collision_hours)
+        self.update_chart(time_to_collision_hours, distance_unit)
         
-    def update_chart(self, time_to_collision):
+    def update_chart(self, time_to_collision, distance_unit):
         """
         Update the chart with the new time to collision
         """
@@ -347,7 +405,7 @@ class CarCollisionWindow(QWidget):
 
         # Create and configure y-axis
         axis_y = QValueAxis()
-        axis_y.setTitleText("Distance (miles)")
+        axis_y.setTitleText(f"Distance ({distance_unit})")
         axis_y.setRange(0, max_distance)
         axis_y.setTickCount(10)
         axis_y.setGridLineVisible(True)
@@ -363,7 +421,24 @@ class CarCollisionWindow(QWidget):
         collision_series.attachAxis(axis_y)
 
         self.chart_view.setChart(chart)
-
+        
+    def update_units(self):
+        """
+        Update the units of the input fields and result labels
+        """
+        units = self.unit_combo.currentText()
+        if units == "mph":
+            self.speed_car_a.setValue(self.speed_car_a.value() * 1.60934)
+            self.speed_car_b.setValue(self.speed_car_b.value() * 1.60934)
+            self.initial_distance.setValue(self.initial_distance.value() * 0.3048)
+            self.result_label.setText('Result will be shown here')
+        else:
+            self.speed_car_a.setValue(self.speed_car_a.value() / 1.60934)
+            self.speed_car_b.setValue(self.speed_car_b.value() / 1.60934)
+            self.initial_distance.setValue(self.initial_distance.value() / 0.3048)
+            self.result_label.setText('Result will be shown here')
+        self.calculate()
+        
     def reset_to_default(self):
         """
         Reset input fields to default values

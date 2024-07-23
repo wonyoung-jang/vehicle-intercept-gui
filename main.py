@@ -1,9 +1,9 @@
 import sys
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                                QLabel, QDoubleSpinBox, QPushButton, QTabWidget,
-                               QComboBox, QGroupBox, QFormLayout)
+                               QComboBox, QGroupBox, QFormLayout, QSlider, QHBoxLayout)
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
 
 class UnitConverter:
@@ -65,12 +65,11 @@ class DroneInterceptWindow(QWidget):
         self.unit_combo = QComboBox()
         self.unit_combo.addItems(["mph", "km/h"])
         self.unit_combo.currentIndexChanged.connect(self.update_units)
-
+        
         input_layout.addRow("Drone speed:", self.drone_speed)
         input_layout.addRow("Radar range:", self.radar_range)
         input_layout.addRow("Reaction time (min):", self.reaction_time)
         input_layout.addRow("Units:", self.unit_combo)
-
 
         layout.addWidget(input_group)
         
@@ -96,6 +95,11 @@ class DroneInterceptWindow(QWidget):
         reset_button.clicked.connect(self.reset_to_default)
         layout.addWidget(reset_button)
         
+        # Add "Start Simulation" button
+        self.start_simulation_button = QPushButton("Start Simulation")
+        self.start_simulation_button.clicked.connect(self.start_simulation)
+        layout.addWidget(self.start_simulation_button)
+
         # Signals and slots
         self.drone_speed.valueChanged.connect(self.calculate)
         self.radar_range.valueChanged.connect(self.calculate)
@@ -249,6 +253,122 @@ class DroneInterceptWindow(QWidget):
         self.reaction_time.setValue(5)
         self.calculate()
         
+    def start_simulation(self):
+        # Get current values
+        drone_speed = self.drone_speed.value()
+        radar_range = self.radar_range.value()
+        reaction_time = self.reaction_time.value()
+        units = self.unit_combo.currentText()
+
+        # Create and show simulation window
+        self.sim_window = DroneInterceptSimulation(drone_speed, radar_range, reaction_time, units)
+        self.sim_window.show()
+        
+class DroneInterceptSimulation(QWidget):
+    def __init__(self, drone_speed, radar_range, reaction_time, units):
+        super().__init__()
+        self.drone_speed = drone_speed
+        self.radar_range = radar_range
+        self.reaction_time = reaction_time
+        self.units = units
+        self.time = 0
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        self.setWindowTitle("Drone Intercept Simulation")
+
+        # Chart view
+        self.chart_view = QChartView()
+        layout.addWidget(self.chart_view)
+
+        # Speed control
+        speed_layout = QHBoxLayout()
+        speed_label = QLabel("Simulation Speed:")
+        self.speed_slider = QSlider(Qt.Horizontal)
+        self.speed_slider.setRange(1, 100)
+        self.speed_slider.setValue(50)
+        speed_layout.addWidget(speed_label)
+        speed_layout.addWidget(self.speed_slider)
+        layout.addLayout(speed_layout)
+
+        # Initialize chart
+        self.init_chart()
+
+        # Timer for animation
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_simulation)
+        self.timer.start(50)  # 20 fps
+
+    def init_chart(self):
+        self.chart = QChart()
+        self.chart.setTitle("Drone Intercept Simulation")
+
+        # Radar range line
+        self.radar_series = QLineSeries()
+        self.radar_series.setName("Radar Range")
+        self.radar_series.append(0, self.radar_range)
+        self.radar_series.append(self.reaction_time * 2, self.radar_range)
+
+        # Drone position series
+        self.drone_series = QLineSeries()
+        self.drone_series.setName("Drone Position")
+
+        # Our drone series
+        self.our_drone_series = QLineSeries()
+        self.our_drone_series.setName("Our Drone")
+
+        self.chart.addSeries(self.radar_series)
+        self.chart.addSeries(self.drone_series)
+        self.chart.addSeries(self.our_drone_series)
+
+        # Set up axes
+        self.axis_x = QValueAxis()
+        self.axis_y = QValueAxis()
+        self.chart.addAxis(self.axis_x, Qt.AlignBottom)
+        self.chart.addAxis(self.axis_y, Qt.AlignLeft)
+
+        self.radar_series.attachAxis(self.axis_x)
+        self.radar_series.attachAxis(self.axis_y)
+        self.drone_series.attachAxis(self.axis_x)
+        self.drone_series.attachAxis(self.axis_y)
+        self.our_drone_series.attachAxis(self.axis_x)
+        self.our_drone_series.attachAxis(self.axis_y)
+
+        self.chart_view.setChart(self.chart)
+
+    def update_simulation(self):
+        speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
+        self.time += 0.05 * speed_factor  # 0.05 seconds per frame at normal speed
+
+        # Update drone positions
+        if self.units == "mph":
+            drone_position = UnitConverter.mph_to_mpm(self.drone_speed) * self.time
+            our_drone_position = max(0, UnitConverter.mph_to_mpm(self.drone_speed) * (self.time - self.reaction_time))
+        else:
+            drone_position = UnitConverter.kmh_to_kpm(self.drone_speed) * self.time
+            our_drone_position = max(0, UnitConverter.kmh_to_kpm(self.drone_speed) * (self.time - self.reaction_time))
+
+        self.drone_series.clear()
+        self.drone_series.append(self.time, drone_position)
+
+        self.our_drone_series.clear()
+        self.our_drone_series.append(self.time, our_drone_position)
+
+        # Adjust axes
+        self.axis_x.setRange(0, max(self.time, self.reaction_time * 2))
+        self.axis_y.setRange(0, max(self.radar_range, drone_position, our_drone_position))
+
+        # Check for interception
+        if our_drone_position >= drone_position and drone_position <= self.radar_range:
+            self.timer.stop()
+            intercept_point = QScatterSeries()
+            intercept_point.append(self.time, drone_position)
+            self.chart.addSeries(intercept_point)
+            intercept_point.attachAxis(self.axis_x)
+            intercept_point.attachAxis(self.axis_y)
+            
 class CarCollisionWindow(QWidget):
     """
     2) Car collision problem
@@ -314,6 +434,11 @@ class CarCollisionWindow(QWidget):
         reset_button = QPushButton("Reset to Default")
         reset_button.clicked.connect(self.reset_to_default)
         layout.addWidget(reset_button)
+        
+        # Add "Start Simulation" button
+        self.start_simulation_button = QPushButton("Start Simulation")
+        self.start_simulation_button.clicked.connect(self.start_simulation)
+        layout.addWidget(self.start_simulation_button)
         
         # Signals and slots
         self.speed_car_a.valueChanged.connect(self.calculate)
@@ -447,7 +572,114 @@ class CarCollisionWindow(QWidget):
         self.speed_car_b.setValue(27)
         self.initial_distance.setValue(200)
         self.calculate()
-        
+    
+    def start_simulation(self):
+        # Get current values
+        speed_car_a = self.speed_car_a.value()
+        speed_car_b = self.speed_car_b.value()
+        initial_distance = self.initial_distance.value()
+        units = self.unit_combo.currentText()
+
+        # Create and show simulation window
+        self.sim_window = CarCollisionSimulation(speed_car_a, speed_car_b, initial_distance, units)
+        self.sim_window.show()
+
+class CarCollisionSimulation(QWidget):
+    def __init__(self, speed_car_a, speed_car_b, initial_distance, units):
+        super().__init__()
+        self.speed_car_a = speed_car_a
+        self.speed_car_b = speed_car_b
+        self.initial_distance = initial_distance
+        self.units = units
+        self.time = 0
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        self.setWindowTitle("Car Collision Simulation")
+
+        # Chart view
+        self.chart_view = QChartView()
+        layout.addWidget(self.chart_view)
+
+        # Speed control
+        speed_layout = QHBoxLayout()
+        speed_label = QLabel("Simulation Speed:")
+        self.speed_slider = QSlider(Qt.Horizontal)
+        self.speed_slider.setRange(1, 100)
+        self.speed_slider.setValue(50)
+        speed_layout.addWidget(speed_label)
+        speed_layout.addWidget(self.speed_slider)
+        layout.addLayout(speed_layout)
+
+        # Initialize chart
+        self.init_chart()
+
+        # Timer for animation
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_simulation)
+        self.timer.start(50)  # 20 fps
+
+    def init_chart(self):
+        self.chart = QChart()
+        self.chart.setTitle("Car Collision Simulation")
+
+        # Car A series
+        self.car_a_series = QLineSeries()
+        self.car_a_series.setName("Car A")
+
+        # Car B series
+        self.car_b_series = QLineSeries()
+        self.car_b_series.setName("Car B")
+
+        self.chart.addSeries(self.car_a_series)
+        self.chart.addSeries(self.car_b_series)
+
+        # Set up axes
+        self.axis_x = QValueAxis()
+        self.axis_y = QValueAxis()
+        self.chart.addAxis(self.axis_x, Qt.AlignBottom)
+        self.chart.addAxis(self.axis_y, Qt.AlignLeft)
+
+        self.car_a_series.attachAxis(self.axis_x)
+        self.car_a_series.attachAxis(self.axis_y)
+        self.car_b_series.attachAxis(self.axis_x)
+        self.car_b_series.attachAxis(self.axis_y)
+
+        self.chart_view.setChart(self.chart)
+
+    def update_simulation(self):
+        speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
+        self.time += 0.05 * speed_factor  # 0.05 seconds per frame at normal speed
+
+        # Update car positions
+        if self.units == "mph":
+            car_a_position = UnitConverter.mph_to_mpm(self.speed_car_a) * self.time
+            car_b_position = UnitConverter.feet_to_miles(self.initial_distance) + UnitConverter.mph_to_mpm(self.speed_car_b) * self.time
+        else:
+            car_a_position = UnitConverter.kmh_to_kpm(self.speed_car_a) * self.time
+            car_b_position = UnitConverter.feet_to_km(self.initial_distance) + UnitConverter.kmh_to_kpm(self.speed_car_b) * self.time
+
+        self.car_a_series.clear()
+        self.car_a_series.append(self.time, car_a_position)
+
+        self.car_b_series.clear()
+        self.car_b_series.append(self.time, car_b_position)
+
+        # Adjust axes
+        self.axis_x.setRange(0, self.time)
+        self.axis_y.setRange(0, max(car_a_position, car_b_position))
+
+        # Check for collision
+        if car_a_position >= car_b_position:
+            self.timer.stop()
+            collision_point = QScatterSeries()
+            collision_point.append(self.time, car_a_position)
+            self.chart.addSeries(collision_point)
+            collision_point.attachAxis(self.axis_x)
+            collision_point.attachAxis(self.axis_y)
+
 class MainWindow(QMainWindow):
     def __init__(self):
         """

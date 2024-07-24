@@ -75,7 +75,7 @@ class DroneInterceptSimulation(QWidget):
 
     def update_simulation(self):
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
-        self.time += 0.05 * speed_factor  # 0.05 minutes per frame at normal speed
+        self.time += 0.05 * speed_factor
 
         # Update drone positions
         if self.units == "mph":
@@ -89,8 +89,8 @@ class DroneInterceptSimulation(QWidget):
         self.our_drone_series.append(self.time, our_drone_position)
 
         # Adjust axes
-        self.axis_x.setRange(0, self.time)
-        self.axis_y.setRange(0, self.radar_range)
+        self.axis_x.setRange(0, self.time * 2)
+        self.axis_y.setRange(0, self.radar_range * 2)
 
         # Check for interception
         if our_drone_position >= enemy_drone_position:

@@ -1,13 +1,14 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, 
-                               QLabel, QDoubleSpinBox, QPushButton,
+from PySide6.QtWidgets import (QVBoxLayout, QMessageBox,
+                               QLabel, QDoubleSpinBox,
                                QComboBox, QGroupBox, QFormLayout)
-from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
+from PySide6.QtCharts import QChart, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 from car_collision_simulation import CarCollisionSimulation
+from simulation_window import SimulationWindow
 
-class CarCollisionWindow(QWidget):
+class CarCollisionWindow(SimulationWindow):
     """
     2) Car collision problem
     - Car A is traveling 45 mph
@@ -20,16 +21,11 @@ class CarCollisionWindow(QWidget):
         Initialize the window
         """
         super().__init__()
-        self.init_ui()
 
-    def init_ui(self):
+    def create_input_group(self, layout):
         """
-        Initialize the UI
+        Create the input group with input fields for car speeds and initial distance
         """
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-        # Input fields
         input_group = QGroupBox("Input Parameters")
         input_layout = QFormLayout(input_group)
 
@@ -61,36 +57,37 @@ class CarCollisionWindow(QWidget):
         input_layout.addRow("Distance units:", self.distance_unit_combo)
 
         layout.addWidget(input_group)
-
-        # Result label
+        
+        # Signals and slots
+        self.speed_car_a.valueChanged.connect(self.validate_and_calculate)
+        self.speed_car_b.valueChanged.connect(self.validate_and_calculate)
+        self.initial_distance.valueChanged.connect(self.validate_and_calculate)
+        
+    def create_result_group(self, layout):
+        """
+        Create the group for displaying the result
+        """
         self.result_label = QLabel('Result will be shown here')
         result_group = QGroupBox("Results")
         result_layout = QVBoxLayout(result_group)
         result_layout.addWidget(self.result_label)
-
         layout.addWidget(result_group)
         
-        # Chart
-        self.chart_view = QChartView()
-        layout.addWidget(self.chart_view)
-        
-        # Reset button
-        reset_button = QPushButton("Reset to Default")
-        reset_button.clicked.connect(self.reset_to_default)
-        layout.addWidget(reset_button)
-        
-        # Simulation button
-        self.start_simulation_button = QPushButton("Start Simulation")
-        self.start_simulation_button.clicked.connect(self.start_simulation)
-        layout.addWidget(self.start_simulation_button)
-        
-        # Signals and slots
-        self.speed_car_a.valueChanged.connect(self.calculate)
-        self.speed_car_b.valueChanged.connect(self.calculate)
-        self.initial_distance.valueChanged.connect(self.calculate)
-        
+    def validate_and_calculate(self):
+        """
+        Validate the input values and calculate the time to collision
+        """
+        if not self.validate_input(self.speed_car_a.value(), min_value=0):
+            QMessageBox.warning(self, "Invalid Input", "Car A speed must be non-negative.")
+            return
+        if not self.validate_input(self.speed_car_b.value(), min_value=0):
+            QMessageBox.warning(self, "Invalid Input", "Car B speed must be non-negative.")
+            return
+        if not self.validate_input(self.initial_distance.value(), min_value=0):
+            QMessageBox.warning(self, "Invalid Input", "Initial distance must be non-negative.")
+            return
         self.calculate()
-
+        
     def calculate(self):
         """
         Calculate the time to collision and update the result label

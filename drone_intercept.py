@@ -1,13 +1,14 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, 
-                               QLabel, QDoubleSpinBox, QPushButton,
+from PySide6.QtWidgets import (QVBoxLayout, QMessageBox,
+                               QLabel, QDoubleSpinBox,
                                QComboBox, QGroupBox, QFormLayout)
-from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
+from PySide6.QtCharts import QChart, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
+from simulation_window import SimulationWindow
 from drone_intercept_simulation import DroneInterceptSimulation
 
-class DroneInterceptWindow(QWidget):
+class DroneInterceptWindow(SimulationWindow):
     """
     1) Drone intercept problem
     - Radar intercept capability is 2 miles
@@ -21,16 +22,11 @@ class DroneInterceptWindow(QWidget):
         Initialize the window
         """
         super().__init__()
-        self.init_ui()
         
-    def init_ui(self):
+    def create_input_group(self, layout):
         """
-        Initialize the UI
+        Create the input group with input fields for drone speed, radar range, and reaction time
         """
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-        # Input fields
         input_group = QGroupBox("Input Parameters")
         input_layout = QFormLayout(input_group)
 
@@ -45,7 +41,7 @@ class DroneInterceptWindow(QWidget):
         self.reaction_time = QDoubleSpinBox()
         self.reaction_time.setValue(5)
         self.reaction_time.setRange(0, 60)
-        
+
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(["mph", "km/h", "ft/h", "m/min", "km/min", "ft/min", "m/s", "km/s", "ft/s"])
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
@@ -53,7 +49,7 @@ class DroneInterceptWindow(QWidget):
         self.distance_unit_combo = QComboBox()
         self.distance_unit_combo.addItems(["miles", "km", "feet"])
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
-        
+
         input_layout.addRow("Drone speed:", self.drone_speed)
         input_layout.addRow("Speed units:", self.speed_unit_combo)
         input_layout.addRow("Radar range:", self.radar_range)
@@ -61,8 +57,16 @@ class DroneInterceptWindow(QWidget):
         input_layout.addRow("Reaction time (min):", self.reaction_time)
 
         layout.addWidget(input_group)
+
+        # Signals and slots
+        self.drone_speed.valueChanged.connect(self.validate_and_calculate)
+        self.radar_range.valueChanged.connect(self.validate_and_calculate)
+        self.reaction_time.valueChanged.connect(self.validate_and_calculate)
         
-        # Result labels
+    def create_result_group(self, layout):
+        """
+        Create the result group with labels for the result and drone speed
+        """
         self.result_label = QLabel('Result will be shown here')
         self.drone_speed_label = QLabel('Drone speed (mph):')
         self.delay_distance_label = QLabel('Delay distance (miles):')
@@ -74,26 +78,20 @@ class DroneInterceptWindow(QWidget):
         result_layout.addWidget(self.delay_distance_label)
 
         layout.addWidget(result_group)
-        
-        # Chart
-        self.chart_view = QChartView()
-        layout.addWidget(self.chart_view)
-        
-        # Reset button
-        reset_button = QPushButton("Reset to Default")
-        reset_button.clicked.connect(self.reset_to_default)
-        layout.addWidget(reset_button)
-        
-        # Simulation button
-        self.start_simulation_button = QPushButton("Start Simulation")
-        self.start_simulation_button.clicked.connect(self.start_simulation)
-        layout.addWidget(self.start_simulation_button)
 
-        # Signals and slots
-        self.drone_speed.valueChanged.connect(self.calculate)
-        self.radar_range.valueChanged.connect(self.calculate)
-        self.reaction_time.valueChanged.connect(self.calculate)
-        
+    def validate_and_calculate(self):
+        """
+        Validate the input fields and calculate the intercept distance
+        """
+        if not self.validate_input(self.drone_speed.value(), min_value=0):
+            QMessageBox.warning(self, "Invalid Input", "Drone speed must be non-negative.")
+            return
+        if not self.validate_input(self.radar_range.value(), min_value=0):
+            QMessageBox.warning(self, "Invalid Input", "Radar range must be non-negative.")
+            return
+        if not self.validate_input(self.reaction_time.value(), min_value=0):
+            QMessageBox.warning(self, "Invalid Input", "Reaction time must be non-negative.")
+            return
         self.calculate()
 
     def calculate(self):

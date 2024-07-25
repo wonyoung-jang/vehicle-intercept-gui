@@ -97,6 +97,9 @@ class DroneInterceptWindow(QWidget):
         self.calculate()
 
     def calculate(self):
+        """
+        Calculate the intercept distance and update the result labels
+        """
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
         
@@ -123,6 +126,9 @@ class DroneInterceptWindow(QWidget):
         self.update_chart(mins_drone_speed, intercept_distance, intercept_possible, distance_unit)
 
     def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit):
+        """
+        Generate suggestions for intercepting the drone
+        """
         suggestions = ['Suggestions:']
         required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
         suggestions.append(f'Decrease drone speed to less than {required_drone_speed:.2f} {self.speed_unit_combo.currentText()}')
@@ -222,6 +228,9 @@ class DroneInterceptWindow(QWidget):
         self.calculate()
         
     def start_simulation(self):
+        """
+        Start the drone intercept simulation
+        """
         # Get current values
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()

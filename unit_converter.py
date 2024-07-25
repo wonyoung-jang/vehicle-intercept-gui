@@ -1,4 +1,8 @@
 class UnitConverter:
+    """
+    Utility class for unit conversion
+    """
+    
     @staticmethod
     def mph_to_mpm(mph):
         return mph / 60

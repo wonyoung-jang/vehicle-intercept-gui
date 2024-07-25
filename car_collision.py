@@ -92,6 +92,9 @@ class CarCollisionWindow(QWidget):
         self.calculate()
 
     def calculate(self):
+        """
+        Calculate the time to collision and update the result label
+        """
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
         
@@ -202,6 +205,9 @@ class CarCollisionWindow(QWidget):
         self.calculate()
     
     def start_simulation(self):
+        """
+        Start the car collision simulation
+        """
         # Get current values
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()

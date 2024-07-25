@@ -6,6 +6,9 @@ from unit_converter import UnitConverter
 
 class DroneInterceptSimulation(QWidget):
     def __init__(self, drone_speed, radar_range, reaction_time, units):
+        """
+        Initialize the window
+        """
         super().__init__()
         self.drone_speed = drone_speed
         self.radar_range = radar_range
@@ -15,6 +18,9 @@ class DroneInterceptSimulation(QWidget):
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initialize the UI
+        """
         layout = QVBoxLayout()
         self.setLayout(layout)
         self.setWindowTitle("Drone Intercept Simulation")
@@ -42,6 +48,9 @@ class DroneInterceptSimulation(QWidget):
         self.timer.start(50)  # 20 fps
 
     def init_chart(self):
+        """
+        Initialize the chart
+        """
         self.chart = QChart()
         self.chart.setTitle("Drone Intercept Simulation")
 
@@ -74,6 +83,9 @@ class DroneInterceptSimulation(QWidget):
         self.chart_view.setChart(self.chart)
 
     def update_simulation(self):
+        """
+        Update the simulation
+        """
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
         self.time += 0.05 * speed_factor
 

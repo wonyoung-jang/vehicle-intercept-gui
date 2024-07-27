@@ -29,9 +29,6 @@ if __name__ == "__main__":
     window.show()
     sys.exit(app.exec())
 
-# TODO fix: car collision simulation
-# - not displaying properly
-# - speed should start slower
 # TODO add: more detailed docstrings
 # TODO implement: a more detailed results section
 # TODO add: unit tests

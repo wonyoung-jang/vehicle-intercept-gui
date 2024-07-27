@@ -87,7 +87,7 @@ class CarCollisionSimulation(QWidget):
         Update the simulation
         """
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
-        self.time += 0.001 * speed_factor  # 0.001 hours (3.6 seconds) per frame at normal speed
+        self.time += 0.00001 * speed_factor  # 0.00001 hours (.036 seconds) per frame at normal speed
 
         # Update car positions
         if self.units == "mph":

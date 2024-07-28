@@ -8,6 +8,10 @@ from unit_converter import UnitConverter
 from car_collision_simulation import CarCollisionSimulation
 from simulation_window import SimulationWindow
 
+# TODO fix: results group is incorrect
+# TODO fix: initial distance not updating
+# TODO fix: initial distance input starting at 99.99, not 200
+
 class CarCollisionWindow(SimulationWindow):
     """
     Original problem wording: Car collision

@@ -8,10 +8,6 @@ from unit_converter import UnitConverter
 from car_collision_simulation import CarCollisionSimulation
 from simulation_window import SimulationWindow
 
-# TODO fix: results group is incorrect
-# TODO fix: initial distance not updating
-# TODO fix: initial distance input starting at 99.99, not 200
-
 class CarCollisionWindow(SimulationWindow):
     """
     Original problem wording: Car collision
@@ -30,42 +26,47 @@ class CarCollisionWindow(SimulationWindow):
         """
         Create the input group with input fields for car speeds and initial distance
         """
+        self.result_label = QLabel('Result will be shown here')
+
         input_group = QGroupBox("Input Parameters")
         input_layout = QFormLayout(input_group)
 
         self.speed_car_a = QDoubleSpinBox()
-        self.speed_car_a.setValue(45)
         self.speed_car_a.setRange(0, 200)
 
         self.speed_car_b = QDoubleSpinBox()
-        self.speed_car_b.setValue(27)
         self.speed_car_b.setRange(0, 200)
-
-        self.initial_distance = QDoubleSpinBox()
-        self.initial_distance.setValue(200)
-        self.initial_distance.setRange(0, 1000)
-
+        
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(["mph", "km/h", "ft/h", "m/min", "km/min", "ft/min", "m/s", "km/s", "ft/s"])
-        self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
+        
+        self.initial_distance = QDoubleSpinBox()
+        self.initial_distance.setRange(0, 1000)
 
         self.distance_unit_combo = QComboBox()
         self.distance_unit_combo.addItems(["miles", "km", "feet"])
-        self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
 
         input_layout.addRow("Car A speed:", self.speed_car_a)
         input_layout.addRow("Car B speed:", self.speed_car_b)
-        input_layout.addRow("Initial distance (feet):", self.initial_distance)
         input_layout.addRow("Speed units:", self.speed_unit_combo)
         input_layout.addRow("Initial distance:", self.initial_distance)
         input_layout.addRow("Distance units:", self.distance_unit_combo)
 
         layout.addWidget(input_group)
         
+        # Set default values
+        self.speed_car_a.setValue(45)
+        self.speed_car_b.setValue(27)
+        self.speed_unit_combo.setCurrentIndex(0)
+        self.initial_distance.setValue(200)
+        self.distance_unit_combo.setCurrentIndex(2)
+        
         # Signals and slots
         self.speed_car_a.valueChanged.connect(self.validate_and_calculate)
         self.speed_car_b.valueChanged.connect(self.validate_and_calculate)
+        self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.initial_distance.valueChanged.connect(self.validate_and_calculate)
+        self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
         
     def create_result_group(self, layout):
         """
@@ -74,7 +75,6 @@ class CarCollisionWindow(SimulationWindow):
         Parameters:
             layout (QVBoxLayout): The layout to add the result group box to.
         """
-        self.result_label = QLabel('Result will be shown here')
         result_group = QGroupBox("Results")
         result_layout = QVBoxLayout(result_group)
         result_layout.addWidget(self.result_label)
@@ -135,28 +135,46 @@ class CarCollisionWindow(SimulationWindow):
         chart = QChart()
         chart.setTitle("Car Collision Visualization")
         max_time = time_to_collision * 1.5 if time_to_collision > 0 else 1
+        
+        # Convert speeds to the chart's distance unit per hour
+        speed_car_a = UnitConverter.from_miles_to_unit(
+            UnitConverter.to_miles_per_hour(self.speed_car_a.value(), self.speed_unit_combo.currentText()),
+            distance_unit
+        )
+        
+        speed_car_b = UnitConverter.from_miles_to_unit(
+            UnitConverter.to_miles_per_hour(self.speed_car_b.value(), self.speed_unit_combo.currentText()),
+            distance_unit
+        )
+        
+        # Convert initial distance to the chart's distance unit
+        initial_distance = UnitConverter.from_miles_to_unit(
+            UnitConverter.to_miles(self.initial_distance.value(), self.distance_unit_combo.currentText()),
+            distance_unit
+        )
 
         # Series for Car A
         series_a = QLineSeries()
         series_a.setName("Car A")
         series_a.append(0, 0)
-        series_a.append(max_time, self.speed_car_a.value() * max_time)
+        series_a.append(max_time, speed_car_a * max_time)
 
         # Series for Car B
         series_b = QLineSeries()
         series_b.setName("Car B")
-        initial_b_position = UnitConverter.from_miles_to_unit(self.initial_distance.value(), distance_unit)
-        series_b.append(0, initial_b_position)
-        series_b.append(max_time, initial_b_position + self.speed_car_b.value() * max_time)
-        max_distance = max(self.speed_car_a.value() * max_time, 
-            initial_b_position + self.speed_car_b.value() * max_time)
+        series_b.append(0, initial_distance)
+        series_b.append(max_time, initial_distance + speed_car_b * max_time)
+
+        # Calculate max distance for y-axis
+        max_distance = max(speed_car_a * max_time, initial_distance + speed_car_b * max_time)
 
         # Collision point
         collision_series = QScatterSeries()
         collision_series.setName("Collision Point")
         if time_to_collision > 0:
-            collision_series.append(time_to_collision, self.speed_car_a.value() * time_to_collision)
-        
+            collision_point = speed_car_a * time_to_collision
+            collision_series.append(time_to_collision, collision_point)    
+            
         # Set colors
         series_a.setPen(QPen(QColor(Qt.blue), 2))
         series_b.setPen(QPen(QColor(Qt.red), 2))
@@ -209,7 +227,7 @@ class CarCollisionWindow(SimulationWindow):
         self.speed_car_b.setValue(27)
         self.initial_distance.setValue(200)
         self.speed_unit_combo.setCurrentIndex(0)
-        self.distance_unit_combo.setCurrentIndex(0)
+        self.distance_unit_combo.setCurrentIndex(2)
         self.calculate()
     
     def start_simulation(self):
@@ -224,5 +242,5 @@ class CarCollisionWindow(SimulationWindow):
         initial_distance_miles = UnitConverter.to_miles(self.initial_distance.value(), distance_unit)
 
         # Create and show simulation window
-        self.sim_window = CarCollisionSimulation(speed_car_a_mph, speed_car_b_mph, initial_distance_miles, "mph")
+        self.sim_window = CarCollisionSimulation(speed_car_a_mph, speed_car_b_mph, initial_distance_miles, "miles")
         self.sim_window.show()

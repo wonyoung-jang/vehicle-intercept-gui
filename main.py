@@ -29,6 +29,5 @@ if __name__ == "__main__":
     window.show()
     sys.exit(app.exec())
 
-# TODO add: more detailed docstrings
 # TODO implement: a more detailed results section
 # TODO add: unit tests

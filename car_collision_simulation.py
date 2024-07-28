@@ -77,7 +77,7 @@ class CarCollisionSimulation(QWidget):
         self.axis_x = QValueAxis()
         self.axis_x.setTitleText("Time (hours)")
         self.axis_y = QValueAxis()
-        self.axis_y.setTitleText("Distance (miles)" if self.units == "mph" else "Distance (km)")
+        self.axis_y.setTitleText(f"Distance ({self.units})")
         self.chart.addAxis(self.axis_x, Qt.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)
 
@@ -93,16 +93,12 @@ class CarCollisionSimulation(QWidget):
         Update the simulation
         """
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
-        self.time += 0.00001 * speed_factor  # 0.00001 hours (.036 seconds) per frame at normal speed
+        self.time += 0.0001 * speed_factor  # 0.0001 hours (0.36 seconds) per frame at normal speed
 
         # Update car positions
-        if self.units == "mph":
-            car_a_position = self.speed_car_a * self.time
-            car_b_position = UnitConverter.feet_to_miles(self.initial_distance) + self.speed_car_b * self.time
-        else:
-            car_a_position = self.speed_car_a * self.time
-            car_b_position = UnitConverter.feet_to_km(self.initial_distance) + self.speed_car_b * self.time
-
+        car_a_position = self.speed_car_a * self.time
+        car_b_position = self.initial_distance + self.speed_car_b * self.time
+        
         self.car_a_series.append(self.time, car_a_position)
         self.car_b_series.append(self.time, car_b_position)
 

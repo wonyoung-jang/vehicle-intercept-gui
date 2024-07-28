@@ -5,22 +5,68 @@ class UnitConverter:
     
     @staticmethod
     def mph_to_mpm(mph):
+        """
+        Converts miles per hour (mph) to miles per minute (mpm).
+
+        Parameters:
+            mph (float): Speed in miles per hour.
+
+        Returns:
+            float: Speed in miles per minute.
+        """
         return mph / 60
     
     @staticmethod
     def kmh_to_kpm(kmh):
+        """
+        Converts kilometers per hour (kmh) to kilometers per minute (kpm).
+
+        Parameters:
+            kmh (float): Speed in kilometers per hour.
+
+        Returns:
+            float: Speed in kilometers per minute.
+        """
         return kmh / 60
     
     @staticmethod
     def feet_to_km(feet):
+        """
+        Converts feet to kilometers.
+
+        Parameters:
+            feet (float): Distance in feet.
+
+        Returns:
+            float: Distance in kilometers.
+        """
         return feet * 0.0003048
 
     @staticmethod
     def feet_to_miles(feet):
+        """
+        Converts feet to miles.
+
+        Parameters:
+            feet (float): Distance in feet.
+
+        Returns:
+            float: Distance in miles.
+        """
         return feet / 5280
     
     @staticmethod
     def to_miles_per_hour(value, unit):
+        """
+        Converts a speed value from various units to miles per hour (mph).
+
+        Parameters:
+            value (float): The speed value to convert.
+            unit (str): The unit of the speed value (e.g., "km/h", "m/s").
+
+        Returns:
+            float: The speed value in miles per hour.
+        """
         if unit == "mph":
             return value
         elif unit == "km/h":
@@ -42,6 +88,16 @@ class UnitConverter:
 
     @staticmethod
     def to_miles(value, unit):
+        """
+        Converts a distance value from various units to miles.
+
+        Parameters:
+            value (float): The distance value to convert.
+            unit (str): The unit of the distance value (e.g., "km", "feet").
+
+        Returns:
+            float: The distance value in miles.
+        """
         if unit == "miles":
             return value
         elif unit == "km":
@@ -51,6 +107,16 @@ class UnitConverter:
 
     @staticmethod
     def from_miles_to_unit(value, unit):
+        """
+        Converts a distance value from miles to various units.
+
+        Parameters:
+            value (float): The distance value in miles.
+            unit (str): The target unit for conversion (e.g., "km", "feet").
+
+        Returns:
+            float: The distance value in the specified unit.
+        """
         if unit == "miles":
             return value
         elif unit == "km":

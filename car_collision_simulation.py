@@ -8,6 +8,12 @@ class CarCollisionSimulation(QWidget):
     def __init__(self, speed_car_a, speed_car_b, initial_distance, units):
         """
         Initialize the window
+        
+        Parameters:
+            speed_car_a (float): The speed of Car A in miles per hour.
+            speed_car_b (float): The speed of Car B in miles per hour.
+            initial_distance (float): The initial distance between the cars in miles.
+            units (str): The unit system used for the simulation (currently only "mph" is supported).
         """
         super().__init__()
         self.speed_car_a = speed_car_a

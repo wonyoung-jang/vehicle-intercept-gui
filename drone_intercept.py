@@ -10,12 +10,12 @@ from drone_intercept_simulation import DroneInterceptSimulation
 
 class DroneInterceptWindow(SimulationWindow):
     """
-    1) Drone intercept problem
+    Original problem wording: Drone intercept
     - Radar intercept capability is 2 miles
     - Drones (bad guys = them, good guys = us) both travel at 30 mph
     - It takes us 5 minutes to react and get our drone up in the air
     - How far away do we intercept the drone?
-    - What can we do to intercept the drone?
+    - (Follow-up) What can we do to intercept the drone?
     """
     def __init__(self):
         """
@@ -26,6 +26,9 @@ class DroneInterceptWindow(SimulationWindow):
     def create_input_group(self, layout):
         """
         Create the input group with input fields for drone speed, radar range, and reaction time
+        
+        Parameters:
+            layout (QVBoxLayout): The layout to add the input group box to.
         """
         input_group = QGroupBox("Input Parameters")
         input_layout = QFormLayout(input_group)
@@ -66,6 +69,9 @@ class DroneInterceptWindow(SimulationWindow):
     def create_result_group(self, layout):
         """
         Create the result group with labels for the result and drone speed
+        
+        Parameters:
+            layout (QVBoxLayout): The layout to add the result group box to.
         """
         self.result_label = QLabel('Result will be shown here')
         self.drone_speed_label = QLabel('Drone speed (mph):')
@@ -126,6 +132,14 @@ class DroneInterceptWindow(SimulationWindow):
     def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit):
         """
         Generate suggestions for intercepting the drone
+        
+        Parameters:
+            drone_speed_mph (float): The drone speed in miles per hour.
+            intercept_distance (float): The calculated intercept distance in miles.
+            distance_unit (str): The unit of distance used for the suggestions (e.g., "miles", "km").
+
+        Returns:
+            list: A list of suggestions for intercepting the drone.
         """
         suggestions = ['Suggestions:']
         required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
@@ -142,6 +156,12 @@ class DroneInterceptWindow(SimulationWindow):
     def update_chart(self, mins_drone_speed, intercept_distance, intercept_possible, distance_unit):
         """
         Update the chart with the new intercept distance
+        
+        Parameters:
+            mins_drone_speed (float): The drone speed in miles per minute.
+            intercept_distance (float): The calculated intercept distance in miles.
+            intercept_possible (bool): True if interception is possible, False otherwise.
+            distance_unit (str): The unit of distance used for the chart (e.g., "miles", "km").
         """
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")

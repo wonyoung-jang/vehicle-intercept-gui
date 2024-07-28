@@ -10,7 +10,7 @@ from simulation_window import SimulationWindow
 
 class CarCollisionWindow(SimulationWindow):
     """
-    2) Car collision problem
+    Original problem wording: Car collision
     - Car A is traveling 45 mph
     - Car B is traveling 27 mph
     - Car B is traveling in the same lane 200 feet in front of Car A
@@ -66,6 +66,9 @@ class CarCollisionWindow(SimulationWindow):
     def create_result_group(self, layout):
         """
         Create the group for displaying the result
+        
+        Parameters:
+            layout (QVBoxLayout): The layout to add the result group box to.
         """
         self.result_label = QLabel('Result will be shown here')
         result_group = QGroupBox("Results")
@@ -120,6 +123,10 @@ class CarCollisionWindow(SimulationWindow):
     def update_chart(self, time_to_collision, distance_unit):
         """
         Update the chart with the new time to collision
+        
+        Parameters:
+            time_to_collision (float): The calculated time to collision in hours.
+            distance_unit (str): The unit of distance used for the chart (e.g., "miles", "km").
         """
         chart = QChart()
         chart.setTitle("Car Collision Visualization")

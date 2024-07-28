@@ -8,6 +8,12 @@ class DroneInterceptSimulation(QWidget):
     def __init__(self, drone_speed, radar_range, reaction_time, units):
         """
         Initialize the window
+        
+        Parameters:
+            drone_speed (float): The speed of both drones in miles per hour.
+            radar_range (float): The radar detection range in miles.
+            reaction_time (float): The time it takes for the friendly drone to react and launch, in minutes.
+            units (str): The unit system used for the simulation (currently only "mph" is supported).
         """
         super().__init__()
         self.drone_speed = drone_speed

@@ -17,19 +17,6 @@ class UnitConverter:
         return mph / 60
 
     @staticmethod
-    def kmh_to_kpm(kmh):
-        """
-        Converts kilometers per hour (kmh) to kilometers per minute (kpm).
-
-        Parameters:
-            kmh (float): Speed in kilometers per hour.
-
-        Returns:
-            float: Speed in kilometers per minute.
-        """
-        return kmh / 60
-
-    @staticmethod
     def to_miles_per_hour(value, unit):
         """
         Converts a speed value from various units to miles per hour (mph).

@@ -30,32 +30,6 @@ class UnitConverter:
         return kmh / 60
 
     @staticmethod
-    def feet_to_km(feet):
-        """
-        Converts feet to kilometers.
-
-        Parameters:
-            feet (float): Distance in feet.
-
-        Returns:
-            float: Distance in kilometers.
-        """
-        return feet * 0.0003048
-
-    @staticmethod
-    def feet_to_miles(feet):
-        """
-        Converts feet to miles.
-
-        Parameters:
-            feet (float): Distance in feet.
-
-        Returns:
-            float: Distance in miles.
-        """
-        return feet / 5280
-
-    @staticmethod
     def to_miles_per_hour(value, unit):
         """
         Converts a speed value from various units to miles per hour (mph).

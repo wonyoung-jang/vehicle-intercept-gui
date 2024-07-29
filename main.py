@@ -31,5 +31,4 @@ if __name__ == "__main__":
     window.show()
     sys.exit(app.exec())
 
-# TODO implement: a more detailed results section
 # TODO add: unit tests

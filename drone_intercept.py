@@ -152,7 +152,7 @@ class DroneInterceptWindow(SimulationWindow):
             f"Bad drone distance during delay ({distance_unit}): {delay_distance:.4f}"
         )
 
-        intercept_distance = radar_range_miles - miles_delay_distance
+        intercept_distance = (radar_range_miles - miles_delay_distance) / 2
         intercept_time = (
             intercept_distance / mins_drone_speed
         ) + self.reaction_time.value()
@@ -228,14 +228,14 @@ class DroneInterceptWindow(SimulationWindow):
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")
         max_time = max(
-            self.reaction_time.value() * 2, self.radar_range.value() / mins_drone_speed
+            self.reaction_time.value() * 2, self.radar_range.value() * 2 / mins_drone_speed
         )
 
         # Series for radar range
         radar_series = QLineSeries()
         radar_series.setName("Radar Range")
         radar_series.append(0, self.radar_range.value())
-        radar_series.append(self.reaction_time.value() * 2, self.radar_range.value())
+        radar_series.append(max_time, self.radar_range.value())
 
         # Series for drone position
         drone_series = QLineSeries()
@@ -328,6 +328,6 @@ class DroneInterceptWindow(SimulationWindow):
 
         # Create and show simulation window
         self.sim_window = DroneInterceptSimulation(
-            drone_speed_mph, radar_range_miles, self.reaction_time.value(), "mph"
+            drone_speed_mph, radar_range_miles, self.reaction_time.value()
         )
         self.sim_window.show()

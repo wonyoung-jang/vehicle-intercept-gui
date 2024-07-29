@@ -32,6 +32,5 @@ if __name__ == "__main__":
     sys.exit(app.exec())
 
 # TODO add: unit tests
-# TODO fix: drone intercept simulation
 # TODO fix: car collision simulation
 # TODO add: documentation

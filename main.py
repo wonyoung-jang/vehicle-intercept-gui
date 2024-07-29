@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
         Main window with two tabs for the two problems
         """
         super().__init__()
-        self.setWindowTitle("Two problems")
+        self.setWindowTitle("Vehicle intercept simulator")
 
         # Create tab widget
         self.tab_widget = QTabWidget()

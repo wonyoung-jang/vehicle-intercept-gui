@@ -159,9 +159,9 @@ class DroneInterceptWindow(SimulationWindow):
         intercept_possible = miles_delay_distance < radar_range_miles
 
         if intercept_possible:
-            results = [f"We intercept the drone {intercept_distance:.2f} miles away,"]
-
-            results.append(f"in {intercept_time} minutes")
+            results = [f"We intercept the drone."]
+            results.append(f"Interception distance: {intercept_distance:.2f} miles away")
+            results.append(f"Interception time: {intercept_time:.2f} minutes")
             self.result_label.setText("\n".join(results))
             self.suggestion_label.setText("")
         else:

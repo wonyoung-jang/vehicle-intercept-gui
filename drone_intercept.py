@@ -172,7 +172,7 @@ class DroneInterceptWindow(SimulationWindow):
             self.suggestion_label.setText("\n".join(suggestions))
 
         self.update_chart(
-            mins_drone_speed, intercept_distance, intercept_possible, distance_unit
+            mins_drone_speed, intercept_distance, intercept_time, intercept_possible, distance_unit
         )
 
     def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit):
@@ -214,7 +214,7 @@ class DroneInterceptWindow(SimulationWindow):
         return suggestions
 
     def update_chart(
-        self, mins_drone_speed, intercept_distance, intercept_possible, distance_unit
+        self, mins_drone_speed, intercept_distance, intercept_time, intercept_possible, distance_unit
     ):
         """
         Update the chart with the new intercept distance
@@ -248,18 +248,18 @@ class DroneInterceptWindow(SimulationWindow):
         intercept_series = QScatterSeries()
         intercept_series.setName("Intercept Point")
         if intercept_possible:
-            intercept_time = (
-                self.radar_range.value() - intercept_distance
-            ) / mins_drone_speed
             intercept_series.append(intercept_time, self.radar_range.value())
 
         # Set colors based on intercept possibility
-        color = QColor(Qt.green) if intercept_possible else QColor(Qt.red)
-        pen = QPen(color)
-        pen.setWidth(3)
-        radar_series.setPen(pen)
-        drone_series.setPen(pen)
-        intercept_series.setColor(QColor(Qt.blue))
+        radar_color = QColor(Qt.cyan) if intercept_possible else QColor(Qt.magenta)
+        radar_pen = QPen(radar_color)
+        drone_color = QColor(Qt.blue) if intercept_possible else QColor(Qt.red)
+        drone_pen = QPen(drone_color)
+        radar_pen.setWidth(3)
+        drone_pen.setWidth(3)
+        radar_series.setPen(radar_pen)
+        drone_series.setPen(drone_pen)
+        intercept_series.setColor(QColor(Qt.green))
         intercept_series.setMarkerSize(15)
 
         chart.addSeries(radar_series)

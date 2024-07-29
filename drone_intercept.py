@@ -1,12 +1,19 @@
-from PySide6.QtWidgets import (QVBoxLayout, QMessageBox,
-                               QLabel, QDoubleSpinBox,
-                               QComboBox, QGroupBox, QFormLayout)
+from PySide6.QtWidgets import (
+    QVBoxLayout,
+    QMessageBox,
+    QLabel,
+    QDoubleSpinBox,
+    QComboBox,
+    QGroupBox,
+    QFormLayout,
+)
 from PySide6.QtCharts import QChart, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 from simulation_window import SimulationWindow
 from drone_intercept_simulation import DroneInterceptSimulation
+
 
 class DroneInterceptWindow(SimulationWindow):
     """
@@ -17,17 +24,17 @@ class DroneInterceptWindow(SimulationWindow):
     - How far away do we intercept the drone?
     - (Follow-up) What can we do to intercept the drone?
     """
-    
+
     def __init__(self):
         """
         Initialize the window
         """
         super().__init__()
-        
+
     def create_input_group(self, layout):
         """
         Create the input group with input fields for drone speed, radar range, and reaction time
-        
+
         Parameters:
             layout (QVBoxLayout): The layout to add the input group box to.
         """
@@ -42,7 +49,9 @@ class DroneInterceptWindow(SimulationWindow):
         self.reaction_time.setRange(0, 60)
 
         self.speed_unit_combo = QComboBox()
-        self.speed_unit_combo.addItems(["mph", "km/h", "ft/h", "m/min", "km/min", "ft/min", "m/s", "km/s", "ft/s"])
+        self.speed_unit_combo.addItems(
+            ["mph", "km/h", "ft/h", "m/min", "km/min", "ft/min", "m/s", "km/s", "ft/s"]
+        )
 
         self.distance_unit_combo = QComboBox()
         self.distance_unit_combo.addItems(["miles", "km", "feet"])
@@ -70,18 +79,18 @@ class DroneInterceptWindow(SimulationWindow):
         self.reaction_time.valueChanged.connect(self.validate_and_calculate)
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
-        
+
     def create_result_group(self, layout):
         """
         Create the result group with labels for the result and drone speed
-        
+
         Parameters:
             layout (QVBoxLayout): The layout to add the result group box to.
         """
         # Result labels
-        self.result_label = QLabel('Result will be shown here')
-        self.drone_speed_label = QLabel('Drone speed (mph):')
-        self.delay_distance_label = QLabel('Delay distance (miles):')
+        self.result_label = QLabel("Result will be shown here")
+        self.drone_speed_label = QLabel("Drone speed (mph):")
+        self.delay_distance_label = QLabel("Delay distance (miles):")
 
         # Layout setup
         result_group = QGroupBox("Results")
@@ -96,13 +105,19 @@ class DroneInterceptWindow(SimulationWindow):
         Validate the input fields and calculate the intercept distance
         """
         if not self.validate_input(self.drone_speed.value(), min_value=0):
-            QMessageBox.warning(self, "Invalid Input", "Drone speed must be non-negative.")
+            QMessageBox.warning(
+                self, "Invalid Input", "Drone speed must be non-negative."
+            )
             return
         if not self.validate_input(self.radar_range.value(), min_value=0):
-            QMessageBox.warning(self, "Invalid Input", "Radar range must be non-negative.")
+            QMessageBox.warning(
+                self, "Invalid Input", "Radar range must be non-negative."
+            )
             return
         if not self.validate_input(self.reaction_time.value(), min_value=0):
-            QMessageBox.warning(self, "Invalid Input", "Reaction time must be non-negative.")
+            QMessageBox.warning(
+                self, "Invalid Input", "Reaction time must be non-negative."
+            )
             return
         self.calculate()
 
@@ -112,33 +127,51 @@ class DroneInterceptWindow(SimulationWindow):
         """
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
-        
-        drone_speed_mph = UnitConverter.to_miles_per_hour(self.drone_speed.value(), speed_unit)
-        radar_range_miles = UnitConverter.to_miles(self.radar_range.value(), distance_unit)
-        
+
+        drone_speed_mph = UnitConverter.to_miles_per_hour(
+            self.drone_speed.value(), speed_unit
+        )
+        radar_range_miles = UnitConverter.to_miles(
+            self.radar_range.value(), distance_unit
+        )
+
         mins_drone_speed = drone_speed_mph / 60
-        self.drone_speed_label.setText(f'Drone speed (mph): {drone_speed_mph:.4f}')
-        
+        self.drone_speed_label.setText(f"Drone speed (mph): {drone_speed_mph:.4f}")
+
         miles_delay_distance = mins_drone_speed * self.reaction_time.value()
-        delay_distance = UnitConverter.from_miles_to_unit(miles_delay_distance, distance_unit)
-        self.delay_distance_label.setText(f'Bad drone distance during delay ({distance_unit}): {delay_distance:.4f}')
-        
+        delay_distance = UnitConverter.from_miles_to_unit(
+            miles_delay_distance, distance_unit
+        )
+        self.delay_distance_label.setText(
+            f"Bad drone distance during delay ({distance_unit}): {delay_distance:.4f}"
+        )
+
         intercept_distance = radar_range_miles - miles_delay_distance
         intercept_possible = miles_delay_distance < radar_range_miles
 
         if intercept_possible:
-            intercept_distance_in_unit = UnitConverter.from_miles_to_unit(intercept_distance, distance_unit)
-            self.result_label.setText(f'We intercept the drone {intercept_distance_in_unit:.2f} {distance_unit} away')
+            intercept_distance_in_unit = UnitConverter.from_miles_to_unit(
+                intercept_distance, distance_unit
+            )
+            self.result_label.setText(
+                f"We intercept the drone {intercept_distance_in_unit:.2f} {distance_unit} away"
+            )
         else:
-            suggestions = self.generate_suggestions(drone_speed_mph, intercept_distance, distance_unit)
-            self.result_label.setText('We can\'t intercept the drone\n\n' + '\n'.join(suggestions))
+            suggestions = self.generate_suggestions(
+                drone_speed_mph, intercept_distance, distance_unit
+            )
+            self.result_label.setText(
+                "We can't intercept the drone\n\n" + "\n".join(suggestions)
+            )
 
-        self.update_chart(mins_drone_speed, intercept_distance, intercept_possible, distance_unit)
+        self.update_chart(
+            mins_drone_speed, intercept_distance, intercept_possible, distance_unit
+        )
 
     def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit):
         """
         Generate suggestions for intercepting the drone
-        
+
         Parameters:
             drone_speed_mph (float): The drone speed in miles per hour.
             intercept_distance (float): The calculated intercept distance in miles.
@@ -147,22 +180,34 @@ class DroneInterceptWindow(SimulationWindow):
         Returns:
             list: A list of suggestions for intercepting the drone.
         """
-        suggestions = ['Suggestions:']
-        required_drone_speed = (self.radar_range.value() / self.reaction_time.value()) * 60
-        suggestions.append(f'Decrease drone speed to less than {required_drone_speed:.2f} {self.speed_unit_combo.currentText()}')
+        suggestions = ["Suggestions:"]
+        required_drone_speed = (
+            self.radar_range.value() / self.reaction_time.value()
+        ) * 60
+        suggestions.append(
+            f"Decrease drone speed to less than {required_drone_speed:.2f} {self.speed_unit_combo.currentText()}"
+        )
 
         required_reaction_time = self.radar_range.value() / (drone_speed_mph / 60)
-        suggestions.append(f'Decrease reaction time to less than {required_reaction_time:.2f} minutes')
+        suggestions.append(
+            f"Decrease reaction time to less than {required_reaction_time:.2f} minutes"
+        )
 
-        required_radar_range = UnitConverter.from_miles_to_unit(abs(intercept_distance), distance_unit)
-        suggestions.append(f'Increase radar range to more than {required_radar_range:.2f} {distance_unit}')
+        required_radar_range = UnitConverter.from_miles_to_unit(
+            abs(intercept_distance), distance_unit
+        )
+        suggestions.append(
+            f"Increase radar range to more than {required_radar_range:.2f} {distance_unit}"
+        )
 
         return suggestions
-                    
-    def update_chart(self, mins_drone_speed, intercept_distance, intercept_possible, distance_unit):
+
+    def update_chart(
+        self, mins_drone_speed, intercept_distance, intercept_possible, distance_unit
+    ):
         """
         Update the chart with the new intercept distance
-        
+
         Parameters:
             mins_drone_speed (float): The drone speed in miles per minute.
             intercept_distance (float): The calculated intercept distance in miles.
@@ -171,7 +216,9 @@ class DroneInterceptWindow(SimulationWindow):
         """
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")
-        max_time = max(self.reaction_time.value() * 2, self.radar_range.value() / mins_drone_speed)
+        max_time = max(
+            self.reaction_time.value() * 2, self.radar_range.value() / mins_drone_speed
+        )
 
         # Series for radar range
         radar_series = QLineSeries()
@@ -190,7 +237,9 @@ class DroneInterceptWindow(SimulationWindow):
         intercept_series = QScatterSeries()
         intercept_series.setName("Intercept Point")
         if intercept_possible:
-            intercept_time = (self.radar_range.value() - intercept_distance) / mins_drone_speed
+            intercept_time = (
+                self.radar_range.value() - intercept_distance
+            ) / mins_drone_speed
             intercept_series.append(intercept_time, self.radar_range.value())
 
         # Set colors based on intercept possibility
@@ -205,7 +254,7 @@ class DroneInterceptWindow(SimulationWindow):
         chart.addSeries(radar_series)
         chart.addSeries(drone_series)
         chart.addSeries(intercept_series)
-        
+
         # Create and configure x-axis
         axis_x = QValueAxis()
         axis_x.setTitleText("Time (minutes)")
@@ -223,7 +272,7 @@ class DroneInterceptWindow(SimulationWindow):
         # Add axes to the chart
         chart.addAxis(axis_x, Qt.AlignBottom)
         chart.addAxis(axis_y, Qt.AlignLeft)
-        
+
         # Attach series to the axes
         radar_series.attachAxis(axis_x)
         radar_series.attachAxis(axis_y)
@@ -233,13 +282,13 @@ class DroneInterceptWindow(SimulationWindow):
         intercept_series.attachAxis(axis_y)
 
         self.chart_view.setChart(chart)
-    
+
     def update_units(self):
         """
         Update the units of the input fields and result labels
         """
         self.calculate()
-        
+
     def reset_to_default(self):
         """
         Reset input fields to default values
@@ -251,7 +300,7 @@ class DroneInterceptWindow(SimulationWindow):
         self.speed_unit_combo.setCurrentIndex(0)
         self.distance_unit_combo.setCurrentIndex(0)
         self.calculate()
-        
+
     def start_simulation(self):
         """
         Start the drone intercept simulation
@@ -259,9 +308,15 @@ class DroneInterceptWindow(SimulationWindow):
         # Get current values
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
-        drone_speed_mph = UnitConverter.to_miles_per_hour(self.drone_speed.value(), speed_unit)
-        radar_range_miles = UnitConverter.to_miles(self.radar_range.value(), distance_unit)
+        drone_speed_mph = UnitConverter.to_miles_per_hour(
+            self.drone_speed.value(), speed_unit
+        )
+        radar_range_miles = UnitConverter.to_miles(
+            self.radar_range.value(), distance_unit
+        )
 
         # Create and show simulation window
-        self.sim_window = DroneInterceptSimulation(drone_speed_mph, radar_range_miles, self.reaction_time.value(), "mph")
+        self.sim_window = DroneInterceptSimulation(
+            drone_speed_mph, radar_range_miles, self.reaction_time.value(), "mph"
+        )
         self.sim_window.show()

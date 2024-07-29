@@ -4,11 +4,12 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 
+
 class CarCollisionSimulation(QWidget):
     def __init__(self, speed_car_a, speed_car_b, initial_distance, units):
         """
         Initialize the window
-        
+
         Parameters:
             speed_car_a (float): The speed of Car A in miles per hour.
             speed_car_b (float): The speed of Car B in miles per hour.
@@ -38,7 +39,7 @@ class CarCollisionSimulation(QWidget):
         speed_layout = QHBoxLayout()
         speed_label = QLabel("Simulation Speed:")
         self.speed_slider = QSlider(Qt.Horizontal)
-        
+
         # Layout setup
         layout.addWidget(self.chart_view)
         speed_layout.addWidget(speed_label)
@@ -47,7 +48,7 @@ class CarCollisionSimulation(QWidget):
 
         # Chart initialization
         self.init_chart()
-        
+
         # Speed slider initialization
         self.speed_slider.setRange(1, 100)
         self.speed_slider.setValue(50)
@@ -80,7 +81,7 @@ class CarCollisionSimulation(QWidget):
         self.car_a_series.attachAxis(self.axis_y)
         self.car_b_series.attachAxis(self.axis_x)
         self.car_b_series.attachAxis(self.axis_y)
-        
+
         # Chart setup
         self.chart = QChart()
         self.chart.setTitle("Car Collision Simulation")
@@ -100,12 +101,14 @@ class CarCollisionSimulation(QWidget):
         """
         # Speed of simulation setup
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
-        self.time += 0.0001 * speed_factor  # 0.0001 hours (0.36 seconds) per frame at normal speed
+        self.time += (
+            0.0001 * speed_factor
+        )  # 0.0001 hours (0.36 seconds) per frame at normal speed
 
         # Update car positions
         car_a_position = self.speed_car_a * self.time
         car_b_position = self.initial_distance + self.speed_car_b * self.time
-        
+
         # Update series
         self.car_a_series.append(self.time, car_a_position)
         self.car_b_series.append(self.time, car_b_position)

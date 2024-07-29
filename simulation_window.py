@@ -1,10 +1,12 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 from PySide6.QtCharts import QChartView
 
+
 class SimulationWindow(QWidget):
     """
     Base class for simulation windows.
     """
+
     def __init__(self):
         """
         Initializes the simulation window.
@@ -31,7 +33,7 @@ class SimulationWindow(QWidget):
 
         # Calculate outcome
         self.calculate()
-        
+
         # Reset button
         reset_button = QPushButton("Reset to Default")
         reset_button.clicked.connect(self.reset_to_default)
@@ -44,7 +46,7 @@ class SimulationWindow(QWidget):
 
     def create_input_group(self, layout):
         """
-        Placeholder method to be implemented by subclasses. 
+        Placeholder method to be implemented by subclasses.
         Creates the input group box with widgets for simulation parameters.
 
         Parameters:
@@ -57,7 +59,7 @@ class SimulationWindow(QWidget):
 
     def create_result_group(self, layout):
         """
-        Placeholder method to be implemented by subclasses. 
+        Placeholder method to be implemented by subclasses.
         Creates the result group box to display the calculated results.
 
         Parameters:
@@ -70,7 +72,7 @@ class SimulationWindow(QWidget):
 
     def update_units(self):
         """
-        Placeholder method to be implemented by subclasses. 
+        Placeholder method to be implemented by subclasses.
         Handles unit changes and updates the calculations accordingly.
 
         Raises:
@@ -80,7 +82,7 @@ class SimulationWindow(QWidget):
 
     def reset_to_default(self):
         """
-        Placeholder method to be implemented by subclasses. 
+        Placeholder method to be implemented by subclasses.
         Resets the input fields to their default values.
 
         Raises:
@@ -90,7 +92,7 @@ class SimulationWindow(QWidget):
 
     def start_simulation(self):
         """
-        Placeholder method to be implemented by subclasses. 
+        Placeholder method to be implemented by subclasses.
         Starts the dynamic simulation in a separate window.
 
         Raises:

@@ -2,7 +2,7 @@ class UnitConverter:
     """
     Utility class for unit conversion
     """
-    
+
     @staticmethod
     def mph_to_mpm(mph):
         """
@@ -15,7 +15,7 @@ class UnitConverter:
             float: Speed in miles per minute.
         """
         return mph / 60
-    
+
     @staticmethod
     def kmh_to_kpm(kmh):
         """
@@ -28,7 +28,7 @@ class UnitConverter:
             float: Speed in kilometers per minute.
         """
         return kmh / 60
-    
+
     @staticmethod
     def feet_to_km(feet):
         """
@@ -54,7 +54,7 @@ class UnitConverter:
             float: Distance in miles.
         """
         return feet / 5280
-    
+
     @staticmethod
     def to_miles_per_hour(value, unit):
         """

@@ -4,11 +4,12 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 
+
 class DroneInterceptSimulation(QWidget):
     def __init__(self, drone_speed, radar_range, reaction_time, units):
         """
         Initialize the window
-        
+
         Parameters:
             drone_speed (float): The speed of both drones in miles per hour.
             radar_range (float): The radar detection range in miles.
@@ -38,7 +39,7 @@ class DroneInterceptSimulation(QWidget):
         speed_layout = QHBoxLayout()
         speed_label = QLabel("Simulation Speed:")
         self.speed_slider = QSlider(Qt.Horizontal)
-        
+
         # Layout setup
         layout.addWidget(self.chart_view)
         speed_layout.addWidget(speed_label)
@@ -47,7 +48,7 @@ class DroneInterceptSimulation(QWidget):
 
         # Chart initialization
         self.init_chart()
-        
+
         # Speed slider initialization
         self.speed_slider.setRange(1, 100)
         self.speed_slider.setValue(50)
@@ -70,13 +71,15 @@ class DroneInterceptSimulation(QWidget):
         self.our_drone_series = QLineSeries()
         self.our_drone_series.setName("Our Drone")
         self.our_drone_series.setPen(QPen(QColor(Qt.blue), 2))
-        
+
         # Set up axes
         self.axis_x = QValueAxis()
         self.axis_x.setTitleText("Time (minutes)")
         self.axis_y = QValueAxis()
-        self.axis_y.setTitleText("Distance (miles)" if self.units == "mph" else "Distance (km)")
-        
+        self.axis_y.setTitleText(
+            "Distance (miles)" if self.units == "mph" else "Distance (km)"
+        )
+
         # Chart setup
         self.chart = QChart()
         self.chart.setTitle("Drone Intercept Simulation")
@@ -104,11 +107,25 @@ class DroneInterceptSimulation(QWidget):
 
         # Update drone positions
         if self.units == "mph":
-            enemy_drone_position = self.radar_range - UnitConverter.mph_to_mpm(self.drone_speed) * self.time
-            our_drone_position = max(0, UnitConverter.mph_to_mpm(self.drone_speed) * (self.time - self.reaction_time))
+            enemy_drone_position = (
+                self.radar_range
+                - UnitConverter.mph_to_mpm(self.drone_speed) * self.time
+            )
+            our_drone_position = max(
+                0,
+                UnitConverter.mph_to_mpm(self.drone_speed)
+                * (self.time - self.reaction_time),
+            )
         else:
-            enemy_drone_position = self.radar_range - UnitConverter.kmh_to_kpm(self.drone_speed) * self.time
-            our_drone_position = max(0, UnitConverter.kmh_to_kpm(self.drone_speed) * (self.time - self.reaction_time))
+            enemy_drone_position = (
+                self.radar_range
+                - UnitConverter.kmh_to_kpm(self.drone_speed) * self.time
+            )
+            our_drone_position = max(
+                0,
+                UnitConverter.kmh_to_kpm(self.drone_speed)
+                * (self.time - self.reaction_time),
+            )
 
         # Update series
         self.enemy_drone_series.append(self.time, enemy_drone_position)

@@ -25,10 +25,11 @@ class SimulationWindow(QWidget):
         # Result label group
         self.create_result_group(layout)
 
-        # Chart
+        # Chart setup
         self.chart_view = QChartView()
         layout.addWidget(self.chart_view)
 
+        # Calculate outcome
         self.calculate()
         
         # Reset button
@@ -36,7 +37,7 @@ class SimulationWindow(QWidget):
         reset_button.clicked.connect(self.reset_to_default)
         layout.addWidget(reset_button)
 
-        # Simulation button (to be implemented in subclasses)
+        # Simulation button
         self.start_simulation_button = QPushButton("Start Simulation")
         self.start_simulation_button.clicked.connect(self.start_simulation)
         layout.addWidget(self.start_simulation_button)

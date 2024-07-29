@@ -33,20 +33,24 @@ class DroneInterceptSimulation(QWidget):
 
         # Chart view
         self.chart_view = QChartView()
-        layout.addWidget(self.chart_view)
 
         # Speed control
         speed_layout = QHBoxLayout()
         speed_label = QLabel("Simulation Speed:")
         self.speed_slider = QSlider(Qt.Horizontal)
-        self.speed_slider.setRange(1, 100)
-        self.speed_slider.setValue(50)
+        
+        # Layout setup
+        layout.addWidget(self.chart_view)
         speed_layout.addWidget(speed_label)
         speed_layout.addWidget(self.speed_slider)
         layout.addLayout(speed_layout)
 
-        # Initialize chart
+        # Chart initialization
         self.init_chart()
+        
+        # Speed slider initialization
+        self.speed_slider.setRange(1, 100)
+        self.speed_slider.setValue(50)
 
         # Timer for animation
         self.timer = QTimer(self)
@@ -57,9 +61,6 @@ class DroneInterceptSimulation(QWidget):
         """
         Initialize the chart
         """
-        self.chart = QChart()
-        self.chart.setTitle("Drone Intercept Simulation")
-
         # Enemy drone series
         self.enemy_drone_series = QLineSeries()
         self.enemy_drone_series.setName("Enemy Drone")
@@ -69,29 +70,35 @@ class DroneInterceptSimulation(QWidget):
         self.our_drone_series = QLineSeries()
         self.our_drone_series.setName("Our Drone")
         self.our_drone_series.setPen(QPen(QColor(Qt.blue), 2))
-
-        self.chart.addSeries(self.enemy_drone_series)
-        self.chart.addSeries(self.our_drone_series)
-
+        
         # Set up axes
         self.axis_x = QValueAxis()
         self.axis_x.setTitleText("Time (minutes)")
         self.axis_y = QValueAxis()
         self.axis_y.setTitleText("Distance (miles)" if self.units == "mph" else "Distance (km)")
+        
+        # Chart setup
+        self.chart = QChart()
+        self.chart.setTitle("Drone Intercept Simulation")
+        self.chart.addSeries(self.enemy_drone_series)
+        self.chart.addSeries(self.our_drone_series)
         self.chart.addAxis(self.axis_x, Qt.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)
 
+        # Attach series to axes
         self.enemy_drone_series.attachAxis(self.axis_x)
         self.enemy_drone_series.attachAxis(self.axis_y)
         self.our_drone_series.attachAxis(self.axis_x)
         self.our_drone_series.attachAxis(self.axis_y)
 
+        # Set chart to view
         self.chart_view.setChart(self.chart)
 
     def update_simulation(self):
         """
         Update the simulation
         """
+        # Speed of simulation setup
         speed_factor = self.speed_slider.value() / 50.0  # 1.0 is normal speed
         self.time += 0.05 * speed_factor
 
@@ -103,6 +110,7 @@ class DroneInterceptSimulation(QWidget):
             enemy_drone_position = self.radar_range - UnitConverter.kmh_to_kpm(self.drone_speed) * self.time
             our_drone_position = max(0, UnitConverter.kmh_to_kpm(self.drone_speed) * (self.time - self.reaction_time))
 
+        # Update series
         self.enemy_drone_series.append(self.time, enemy_drone_position)
         self.our_drone_series.append(self.time, our_drone_position)
 

@@ -17,6 +17,7 @@ class DroneInterceptWindow(SimulationWindow):
     - How far away do we intercept the drone?
     - (Follow-up) What can we do to intercept the drone?
     """
+    
     def __init__(self):
         """
         Initialize the window
@@ -30,41 +31,45 @@ class DroneInterceptWindow(SimulationWindow):
         Parameters:
             layout (QVBoxLayout): The layout to add the input group box to.
         """
-        input_group = QGroupBox("Input Parameters")
-        input_layout = QFormLayout(input_group)
-
+        # Input fields
         self.drone_speed = QDoubleSpinBox()
-        self.drone_speed.setValue(30)
         self.drone_speed.setRange(1, 1000)
 
         self.radar_range = QDoubleSpinBox()
-        self.radar_range.setValue(2)
         self.radar_range.setRange(1, 100)
 
         self.reaction_time = QDoubleSpinBox()
-        self.reaction_time.setValue(5)
         self.reaction_time.setRange(0, 60)
 
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(["mph", "km/h", "ft/h", "m/min", "km/min", "ft/min", "m/s", "km/s", "ft/s"])
-        self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
 
         self.distance_unit_combo = QComboBox()
         self.distance_unit_combo.addItems(["miles", "km", "feet"])
-        self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
 
+        # Layout setup
+        input_group = QGroupBox("Input Parameters")
+        input_layout = QFormLayout(input_group)
         input_layout.addRow("Drone speed:", self.drone_speed)
         input_layout.addRow("Speed units:", self.speed_unit_combo)
         input_layout.addRow("Radar range:", self.radar_range)
         input_layout.addRow("Distance units:", self.distance_unit_combo)
         input_layout.addRow("Reaction time (min):", self.reaction_time)
-
         layout.addWidget(input_group)
+
+        # Set default values
+        self.drone_speed.setValue(30)
+        self.radar_range.setValue(2)
+        self.reaction_time.setValue(5)
+        self.speed_unit_combo.setCurrentIndex(0)
+        self.distance_unit_combo.setCurrentIndex(0)
 
         # Signals and slots
         self.drone_speed.valueChanged.connect(self.validate_and_calculate)
         self.radar_range.valueChanged.connect(self.validate_and_calculate)
         self.reaction_time.valueChanged.connect(self.validate_and_calculate)
+        self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
+        self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
         
     def create_result_group(self, layout):
         """
@@ -73,16 +78,17 @@ class DroneInterceptWindow(SimulationWindow):
         Parameters:
             layout (QVBoxLayout): The layout to add the result group box to.
         """
+        # Result labels
         self.result_label = QLabel('Result will be shown here')
         self.drone_speed_label = QLabel('Drone speed (mph):')
         self.delay_distance_label = QLabel('Delay distance (miles):')
 
+        # Layout setup
         result_group = QGroupBox("Results")
         result_layout = QVBoxLayout(result_group)
         result_layout.addWidget(self.result_label)
         result_layout.addWidget(self.drone_speed_label)
         result_layout.addWidget(self.delay_distance_label)
-
         layout.addWidget(result_group)
 
     def validate_and_calculate(self):
@@ -238,6 +244,7 @@ class DroneInterceptWindow(SimulationWindow):
         """
         Reset input fields to default values
         """
+        # Reset input fields
         self.drone_speed.setValue(30)
         self.radar_range.setValue(2)
         self.reaction_time.setValue(5)

@@ -16,6 +16,7 @@ class CarCollisionWindow(SimulationWindow):
     - Car B is traveling in the same lane 200 feet in front of Car A
     - How long until the cars collide?    
     """
+    
     def __init__(self):
         """
         Initialize the window
@@ -26,11 +27,7 @@ class CarCollisionWindow(SimulationWindow):
         """
         Create the input group with input fields for car speeds and initial distance
         """
-        self.result_label = QLabel('Result will be shown here')
-
-        input_group = QGroupBox("Input Parameters")
-        input_layout = QFormLayout(input_group)
-
+        # Input fields
         self.speed_car_a = QDoubleSpinBox()
         self.speed_car_a.setRange(0, 200)
 
@@ -46,12 +43,14 @@ class CarCollisionWindow(SimulationWindow):
         self.distance_unit_combo = QComboBox()
         self.distance_unit_combo.addItems(["miles", "km", "feet"])
 
+        # Layout setup
+        input_group = QGroupBox("Input Parameters")
+        input_layout = QFormLayout(input_group)
         input_layout.addRow("Car A speed:", self.speed_car_a)
         input_layout.addRow("Car B speed:", self.speed_car_b)
         input_layout.addRow("Speed units:", self.speed_unit_combo)
         input_layout.addRow("Initial distance:", self.initial_distance)
         input_layout.addRow("Distance units:", self.distance_unit_combo)
-
         layout.addWidget(input_group)
         
         # Set default values
@@ -75,6 +74,10 @@ class CarCollisionWindow(SimulationWindow):
         Parameters:
             layout (QVBoxLayout): The layout to add the result group box to.
         """
+        # Result label
+        self.result_label = QLabel('Result will be shown here')
+
+        # Layout setup
         result_group = QGroupBox("Results")
         result_layout = QVBoxLayout(result_group)
         result_layout.addWidget(self.result_label)
@@ -132,8 +135,7 @@ class CarCollisionWindow(SimulationWindow):
             time_to_collision (float): The calculated time to collision in hours.
             distance_unit (str): The unit of distance used for the chart (e.g., "miles", "km").
         """
-        chart = QChart()
-        chart.setTitle("Car Collision Visualization")
+        # Calculate the maximum time for the chart
         max_time = time_to_collision * 1.5 if time_to_collision > 0 else 1
         
         # Convert speeds to the chart's distance unit per hour
@@ -181,10 +183,6 @@ class CarCollisionWindow(SimulationWindow):
         collision_series.setColor(QColor(Qt.green))
         collision_series.setMarkerSize(15)
         
-        chart.addSeries(series_a)
-        chart.addSeries(series_b)
-        chart.addSeries(collision_series)
-        
         # Create and configure x-axis
         axis_x = QValueAxis()
         axis_x.setTitleText("Time (hours)")
@@ -192,15 +190,20 @@ class CarCollisionWindow(SimulationWindow):
         axis_x.setTickCount(10)
         axis_x.setGridLineVisible(True)
 
-        chart.addAxis(axis_x, Qt.AlignBottom)
-
         # Create and configure y-axis
         axis_y = QValueAxis()
         axis_y.setTitleText(f"Distance ({distance_unit})")
         axis_y.setRange(0, max_distance)
         axis_y.setTickCount(10)
         axis_y.setGridLineVisible(True)
-
+        
+        # Chart setup
+        chart = QChart()
+        chart.setTitle("Car Collision Visualization")
+        chart.addSeries(series_a)
+        chart.addSeries(series_b)
+        chart.addSeries(collision_series)
+        chart.addAxis(axis_x, Qt.AlignBottom)
         chart.addAxis(axis_y, Qt.AlignLeft)
         
         # Attach series to the axes
@@ -210,7 +213,8 @@ class CarCollisionWindow(SimulationWindow):
         series_a.attachAxis(axis_y)
         series_b.attachAxis(axis_y)
         collision_series.attachAxis(axis_y)
-
+        
+        # Set chart to view
         self.chart_view.setChart(chart)
         
     def update_units(self):
@@ -223,6 +227,7 @@ class CarCollisionWindow(SimulationWindow):
         """
         Reset input fields to default values
         """
+        # Reset input fields
         self.speed_car_a.setValue(45)
         self.speed_car_b.setValue(27)
         self.initial_distance.setValue(200)

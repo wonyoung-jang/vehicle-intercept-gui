@@ -113,8 +113,6 @@ class DroneInterceptSimulation(QWidget):
         speed_factor = self.speed_slider.value() / 50.0
         self.time += 0.05 * speed_factor
         
-        print(self.time)
-
         # Update drone positions
         if self.time > 0:
             enemy_drone_position = self.radar_range - ((self.drone_speed / 60) * self.time)

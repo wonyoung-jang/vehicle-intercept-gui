@@ -36,10 +36,10 @@ class CarCollisionWindow(SimulationWindow):
         """
         # Input fields
         self.speed_car_a = QDoubleSpinBox()
-        self.speed_car_a.setRange(0, 200)
+        self.speed_car_a.setRange(0.0, 999999.0)
 
         self.speed_car_b = QDoubleSpinBox()
-        self.speed_car_b.setRange(0, 200)
+        self.speed_car_b.setRange(0.0, 999999.0)
 
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(

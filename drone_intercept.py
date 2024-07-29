@@ -40,13 +40,13 @@ class DroneInterceptWindow(SimulationWindow):
         """
         # Input fields
         self.drone_speed = QDoubleSpinBox()
-        self.drone_speed.setRange(1, 1000)
+        self.drone_speed.setRange(1.0, 999999.0)
 
         self.radar_range = QDoubleSpinBox()
-        self.radar_range.setRange(1, 100)
+        self.radar_range.setRange(1.0, 999999.0)
 
         self.reaction_time = QDoubleSpinBox()
-        self.reaction_time.setRange(0, 60)
+        self.reaction_time.setRange(0.0, 999999.0)
 
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(
@@ -90,7 +90,7 @@ class DroneInterceptWindow(SimulationWindow):
         # Result labels
         self.result_label = QLabel("Result will be shown here")
         self.drone_speed_label = QLabel("Drone speed (mph):")
-        self.delay_distance_label = QLabel("Delay distance (miles):")
+        self.delay_distance_label = QLabel("Bad drone distance during delay:")
 
         # Layout setup
         result_group = QGroupBox("Results")
@@ -128,13 +128,17 @@ class DroneInterceptWindow(SimulationWindow):
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
 
+        # Calculate drone speed in miles per hour
         drone_speed_mph = UnitConverter.to_miles_per_hour(
             self.drone_speed.value(), speed_unit
         )
+        
+        # Calculate radar range in miles
         radar_range_miles = UnitConverter.to_miles(
             self.radar_range.value(), distance_unit
         )
 
+        # Calculate intercept distance
         mins_drone_speed = drone_speed_mph / 60
         self.drone_speed_label.setText(f"Drone speed (mph): {drone_speed_mph:.4f}")
 

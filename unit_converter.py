@@ -4,19 +4,6 @@ class UnitConverter:
     """
 
     @staticmethod
-    def mph_to_mpm(mph):
-        """
-        Converts miles per hour (mph) to miles per minute (mpm).
-
-        Parameters:
-            mph (float): Speed in miles per hour.
-
-        Returns:
-            float: Speed in miles per minute.
-        """
-        return mph / 60
-
-    @staticmethod
     def to_miles_per_hour(value, unit):
         """
         Converts a speed value from various units to miles per hour (mph).

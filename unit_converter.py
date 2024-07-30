@@ -25,18 +25,22 @@ class UnitConverter:
             return value / 1760
         elif unit == "ft/h":
             return value / 5280
+        elif unit == 'mpm':
+            return value * 60
         elif unit == "km/min":
             return value * 60 / 1.60934
         elif unit == "m/min":
-            return value * 60
+            return value * 60 / 1609.34
         elif unit == "yd/min":
             return value * 60 / 1760
         elif unit == "ft/min":
             return value * 60 / 5280
+        elif unit == "mps":
+            return value * 3600
         elif unit == "km/s":
             return value * 3600 / 1.60934
         elif unit == "m/s":
-            return value * 3600
+            return value * 3600 / 1609.34
         elif unit == "yd/s":
             return value * 3600 / 1760
         elif unit == "ft/s":

@@ -33,6 +33,8 @@ class UnitConverter:
             return value * 3600 / 1.60934
         elif unit == "ft/s":
             return value * 3600 / 5280
+        else:
+            raise ValueError(f"Invalid unit: {unit}")
 
     @staticmethod
     def to_miles(value, unit):
@@ -52,6 +54,8 @@ class UnitConverter:
             return value / 1.60934
         elif unit == "feet":
             return value / 5280
+        else:
+            raise ValueError(f"Invalid unit: {unit}")
 
     @staticmethod
     def from_miles_to_unit(value, unit):
@@ -71,3 +75,5 @@ class UnitConverter:
             return value * 1.60934
         elif unit == "feet":
             return value * 5280
+        else:
+            raise ValueError(f"Invalid unit: {unit}")

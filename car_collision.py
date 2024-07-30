@@ -150,9 +150,10 @@ class CarCollisionWindow(SimulationWindow):
         total_seconds = time_to_collision_hours * 3600
         minutes = int(total_seconds // 60)
         seconds = int(total_seconds % 60)
+        milliseconds = int((total_seconds % 1) * 1000)
 
         self.result_label.setText(
-            f"The cars will collide in {minutes} minutes and {seconds} seconds."
+            f"The cars will collide in {minutes} minutes and {seconds}.{milliseconds} seconds."
         )
         
         # Update the chart

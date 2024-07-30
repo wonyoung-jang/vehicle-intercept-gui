@@ -120,6 +120,8 @@ class CarCollisionSimulation(QWidget):
         # Check for collision
         if car_a_position >= car_b_position:
             self.timer.stop()
+            self.car_a_series.setPen(QPen(QColor(Qt.blue), 3))
+            self.car_b_series.setPen(QPen(QColor(Qt.red), 3))
             collision_point = QScatterSeries()
             collision_point.setName("Collision")
             collision_point.append(self.time, car_a_position)

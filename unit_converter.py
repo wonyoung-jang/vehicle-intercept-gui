@@ -19,18 +19,26 @@ class UnitConverter:
             return value
         elif unit == "km/h":
             return value / 1.60934
+        elif unit == "m/h":
+            return value / 1609.34
+        elif unit == "yd/h":
+            return value / 1760
         elif unit == "ft/h":
             return value / 5280
-        elif unit == "m/min":
-            return value * 60
         elif unit == "km/min":
             return value * 60 / 1.60934
+        elif unit == "m/min":
+            return value * 60
+        elif unit == "yd/min":
+            return value * 60 / 1760
         elif unit == "ft/min":
             return value * 60 / 5280
-        elif unit == "m/s":
-            return value * 3600
         elif unit == "km/s":
             return value * 3600 / 1.60934
+        elif unit == "m/s":
+            return value * 3600
+        elif unit == "yd/s":
+            return value * 3600 / 1760
         elif unit == "ft/s":
             return value * 3600 / 5280
         else:
@@ -50,8 +58,12 @@ class UnitConverter:
         """
         if unit == "miles":
             return value
-        elif unit == "km":
+        elif unit == "kilometers":
             return value / 1.60934
+        elif unit == "meters":
+            return value / 1609.34
+        elif unit == "yards":
+            return value / 1760
         elif unit == "feet":
             return value / 5280
         else:
@@ -71,8 +83,12 @@ class UnitConverter:
         """
         if unit == "miles":
             return value
-        elif unit == "km":
+        elif unit == "kilometers":
             return value * 1.60934
+        elif unit == "meters":
+            return value * 1609.34
+        elif unit == "yards":
+            return value * 1760
         elif unit == "feet":
             return value * 5280
         else:

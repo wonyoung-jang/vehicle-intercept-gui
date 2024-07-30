@@ -50,11 +50,14 @@ class DroneInterceptWindow(SimulationWindow):
 
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(
-            ["mph", "km/h", "ft/h", "m/min", "km/min", "ft/min", "m/s", "km/s", "ft/s"]
+            ["mph", 
+             "km/h", "m/h", "yd/h", "ft/h", 
+             "km/min", "m/min", "yd/min", "ft/min", 
+             "km/s", "m/s", "yd/s", "ft/s"]
         )
 
         self.distance_unit_combo = QComboBox()
-        self.distance_unit_combo.addItems(["miles", "km", "feet"])
+        self.distance_unit_combo.addItems(["miles", "kilometers", "meters", "yards", "feet"])
 
         # Layout setup
         input_group = QGroupBox("Input Parameters")

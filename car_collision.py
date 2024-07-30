@@ -210,6 +210,13 @@ class CarCollisionWindow(SimulationWindow):
         max_distance = max(
             speed_car_a * max_time, initial_distance + speed_car_b * max_time
         )
+        
+        # Intersect point
+        intersect_series = QLineSeries()
+        intersect_series.setName("Intersect Point")
+        intersect_series.append(0, speed_car_a * time_to_collision)
+        intersect_series.append(time_to_collision, speed_car_a * time_to_collision)
+        intersect_series.append(time_to_collision, 0)
 
         # Collision point
         collision_series = QScatterSeries()
@@ -221,6 +228,7 @@ class CarCollisionWindow(SimulationWindow):
         # Set colors
         series_a.setPen(QPen(QColor(Qt.blue), 2))
         series_b.setPen(QPen(QColor(Qt.red), 2))
+        intersect_series.setPen(QPen(QColor(Qt.green), 2, Qt.DashLine))
         collision_series.setColor(QColor(Qt.green))
         collision_series.setMarkerSize(15)
 
@@ -241,18 +249,23 @@ class CarCollisionWindow(SimulationWindow):
         # Chart setup
         chart = QChart()
         chart.setTitle("Car Collision Visualization")
+        
+        chart.addSeries(intersect_series)
         chart.addSeries(series_a)
         chart.addSeries(series_b)
         chart.addSeries(collision_series)
+        
         chart.addAxis(axis_x, Qt.AlignBottom)
         chart.addAxis(axis_y, Qt.AlignLeft)
 
         # Attach series to the axes
         series_a.attachAxis(axis_x)
-        series_b.attachAxis(axis_x)
-        collision_series.attachAxis(axis_x)
         series_a.attachAxis(axis_y)
+        series_b.attachAxis(axis_x)
         series_b.attachAxis(axis_y)
+        intersect_series.attachAxis(axis_x)
+        intersect_series.attachAxis(axis_y)
+        collision_series.attachAxis(axis_x)
         collision_series.attachAxis(axis_y)
 
         # Set chart to view

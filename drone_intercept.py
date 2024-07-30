@@ -243,27 +243,31 @@ class DroneInterceptWindow(SimulationWindow):
         drone_series.append(0, 0)
         drone_series.append(max_time, max_time * mins_drone_speed)
         max_distance = max(self.radar_range.value(), mins_drone_speed * max_time)
+        
+        # Intersect point
+        intersect_series = QLineSeries()
+        intersect_series.setName("Intersect Point")
+        intersect_series.append(intercept_time, self.radar_range.value())
+        intersect_series.append(intercept_time, 0)
 
         # Intercept point
         intercept_series = QScatterSeries()
         intercept_series.setName("Intercept Point")
-        if intercept_possible:
-            intercept_series.append(intercept_time, self.radar_range.value())
+        intercept_series.append(intercept_time, self.radar_range.value())
 
         # Set colors based on intercept possibility
-        radar_color = QColor(Qt.cyan) if intercept_possible else QColor(Qt.magenta)
-        radar_pen = QPen(radar_color)
-        drone_color = QColor(Qt.blue) if intercept_possible else QColor(Qt.red)
-        drone_pen = QPen(drone_color)
-        radar_pen.setWidth(3)
-        drone_pen.setWidth(3)
-        radar_series.setPen(radar_pen)
-        drone_series.setPen(drone_pen)
-        intercept_series.setColor(QColor(Qt.green))
-        intercept_series.setMarkerSize(15)
+        radar_series.setPen(QPen(QColor(Qt.cyan) if intercept_possible else QColor(Qt.magenta)))
+        drone_series.setPen(QPen(QColor(Qt.blue) if intercept_possible else QColor(Qt.red)))
+        intersect_series.setPen(QPen(QColor(Qt.darkGreen), 2, Qt.DashLine))
+        intercept_series.setPen(QPen(QColor(Qt.darkGreen), 2, Qt.DashLine))
+        if intercept_possible:
+            intersect_series.setPen(QPen(QColor(Qt.green), 3))
+            intercept_series.setPen(QPen(QColor(Qt.green), 3))
+            intercept_series.setMarkerSize(15)
 
         chart.addSeries(radar_series)
         chart.addSeries(drone_series)
+        chart.addSeries(intersect_series)
         chart.addSeries(intercept_series)
 
         # Create and configure x-axis
@@ -289,6 +293,8 @@ class DroneInterceptWindow(SimulationWindow):
         radar_series.attachAxis(axis_y)
         drone_series.attachAxis(axis_x)
         drone_series.attachAxis(axis_y)
+        intersect_series.attachAxis(axis_x)
+        intersect_series.attachAxis(axis_y)
         intercept_series.attachAxis(axis_x)
         intercept_series.attachAxis(axis_y)
 

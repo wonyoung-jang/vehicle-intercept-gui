@@ -47,7 +47,7 @@ class CarCollisionWindow(SimulationWindow):
         )
 
         self.initial_distance = QDoubleSpinBox()
-        self.initial_distance.setRange(0, 1000)
+        self.initial_distance.setRange(0, 999999.0)
 
         self.distance_unit_combo = QComboBox()
         self.distance_unit_combo.addItems(["miles", "km", "feet"])
@@ -120,16 +120,22 @@ class CarCollisionWindow(SimulationWindow):
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
 
+        # Calculate the speed of car A in miles per hour
         speed_car_a_mph = UnitConverter.to_miles_per_hour(
             self.speed_car_a.value(), speed_unit
         )
+        
+        # Calculate the speed of car B in miles per hour
         speed_car_b_mph = UnitConverter.to_miles_per_hour(
             self.speed_car_b.value(), speed_unit
         )
+        
+        # Calculate the initial distance between the cars in miles
         initial_distance_miles = UnitConverter.to_miles(
             self.initial_distance.value(), distance_unit
         )
 
+        # Calculate the relative speed of the cars
         speed_difference = speed_car_a_mph - speed_car_b_mph
 
         if speed_difference <= 0:
@@ -148,6 +154,8 @@ class CarCollisionWindow(SimulationWindow):
         self.result_label.setText(
             f"The cars will collide in {minutes} minutes and {seconds} seconds."
         )
+        
+        # Update the chart
         self.update_chart(time_to_collision_hours, distance_unit)
 
     def update_chart(self, time_to_collision, distance_unit):
@@ -169,6 +177,7 @@ class CarCollisionWindow(SimulationWindow):
             distance_unit,
         )
 
+        # Convert speeds to the chart's distance unit per hour
         speed_car_b = UnitConverter.from_miles_to_unit(
             UnitConverter.to_miles_per_hour(
                 self.speed_car_b.value(), self.speed_unit_combo.currentText()
@@ -285,6 +294,6 @@ class CarCollisionWindow(SimulationWindow):
 
         # Create and show simulation window
         self.sim_window = CarCollisionSimulation(
-            speed_car_a_mph, speed_car_b_mph, initial_distance_miles, "miles"
+            speed_car_a_mph, speed_car_b_mph, initial_distance_miles
         )
         self.sim_window.show()

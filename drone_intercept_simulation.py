@@ -56,7 +56,7 @@ class DroneInterceptSimulation(QWidget):
         # Timer for animation
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_simulation)
-        self.timer.start(50)  # 20 fps
+        self.timer.start(50)
 
     def init_chart(self):
         """

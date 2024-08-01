@@ -22,9 +22,13 @@ Calculates interception possibilities for drones.
 
 Calculates interception distance and time, if possible.
 
-Gives suggestions for successful interception when not possible.
+Gives suggestions for successful intercepti
 
-![](assets/screenshot-drone-intercept.webp)
+on when not possible.
+
+https://github.com/user-attachments/assets/0f290bf4-4fd5-4440-abb2-319c9ec7028e
+
+https://github.com/user-attachments/assets/062ec2a7-385d-4da9-9c4a-20597e6dc31e
 
 #### Input parameters: 
 
@@ -38,7 +42,9 @@ Gives suggestions for successful interception when not possible.
 
 Calculates collision time for two cars driving in the same direction and lane.
 
-![](assets/screenshot-car-collision.webp)
+https://github.com/user-attachments/assets/d755a2ef-76f4-4959-8a9f-789a702beef1
+
+https://github.com/user-attachments/assets/585c23cb-99eb-440b-8ad1-bfbc4f909bb0
 
 #### Input parameters:
 

@@ -105,9 +105,6 @@ class CarCollisionSimulation(QWidget):
         car_a_position = (self.speed_car_a / 60) * self.time
         car_b_position = ((self.speed_car_b / 60) * self.time) + self.initial_distance
 
-        print(self.speed_car_a, self.speed_car_b, self.time, self.initial_distance)
-        print(car_a_position, car_b_position)
-
         # Update series
         self.car_a_series.append(self.time, car_a_position)
         self.car_b_series.append(self.time, car_b_position)

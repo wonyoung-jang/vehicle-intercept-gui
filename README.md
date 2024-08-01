@@ -4,6 +4,7 @@ This is an interactive Python application for simulating a drone interception pr
 
 ## Table of Contents
 
+- [Background](#background)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -16,16 +17,36 @@ I was haunted by these two problems after my brain short circuited while solving
 ## Features
 
 ### Drone Intercept
-![](assets/screenshot-drone-intercept.webp)
-- Parameters: drone speed, radar range, and reaction time
-- Calculates interception possibilities for drones
-- Gives suggestions for successful interception when not possible
 
+Calculates interception possibilities for drones.
+
+Calculates interception distance and time, if possible.
+
+Gives suggestions for successful interception when not possible.
+
+![](assets/screenshot-drone-intercept.webp)
+
+#### Input parameters: 
+
+  - **Drone speed**: The speed of both drones in miles per hour.
+
+  - **Radar range**: The radar detection range in miles.
+
+  - **Reaction time**: The time it takes for the friendly drone to react and launch, in minutes.
 
 ### Car Collision
+
+Calculates collision time for two cars driving in the same direction and lane.
+
 ![](assets/screenshot-car-collision.webp)
-- Parameters: speeds of both cars and initial distance between them
-- Calculates time until collision for two cars
+
+#### Input parameters:
+
+  - **Car A speed**: The speed of Car A in miles per hour.
+
+  - **Car B speed**: The speed of Car B in miles per hour.
+
+  - **Initial distance**: The initial distance between the cars in miles.
 
 ## Requirements
 - Python 3.x
@@ -38,10 +59,11 @@ I was haunted by these two problems after my brain short circuited while solving
 
 ## Usage
 
-1. Run the application:
-    `python main.py`
-2. Use the tabs to switch between simulations. 
-3. Adjust parameters using the spinboxes.
+1. Run the application: `python main.py`
+2. Use the tabs to switch between simulations (ctrl + tab)
+3. Adjust parameters using the input spinboxes
+4. Adjust the units using the dropdowns (QComboBox)
+5. Adjust the speed of the simulation using the slider
 
 ## License
 

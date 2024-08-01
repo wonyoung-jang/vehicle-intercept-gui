@@ -25,7 +25,7 @@ class UnitConverter:
             return value / 1760
         elif unit == "ft/h":
             return value / 5280
-        elif unit == 'mpm':
+        elif unit == "mpm":
             return value * 60
         elif unit == "km/min":
             return value * 60 / 1.60934

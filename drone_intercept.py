@@ -15,6 +15,12 @@ from simulation_window import SimulationWindow
 from drone_intercept_simulation import DroneInterceptSimulation
 
 
+"""
+Design Patterns:
+    Template Method: Inherits from SimulationWindow and implements methods.
+"""
+
+
 class DroneInterceptWindow(SimulationWindow):
     """
     Original problem wording: Drone intercept
@@ -50,13 +56,29 @@ class DroneInterceptWindow(SimulationWindow):
 
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(
-            ["mph", "km/h", "m/h", "yd/h", "ft/h", 
-             "mpm", "km/min", "m/min", "yd/min", "ft/min", 
-             "mps", "km/s", "m/s", "yd/s", "ft/s"]
+            [
+                "mph",
+                "km/h",
+                "m/h",
+                "yd/h",
+                "ft/h",
+                "mpm",
+                "km/min",
+                "m/min",
+                "yd/min",
+                "ft/min",
+                "mps",
+                "km/s",
+                "m/s",
+                "yd/s",
+                "ft/s",
+            ]
         )
 
         self.distance_unit_combo = QComboBox()
-        self.distance_unit_combo.addItems(["miles", "kilometers", "meters", "yards", "feet"])
+        self.distance_unit_combo.addItems(
+            ["miles", "kilometers", "meters", "yards", "feet"]
+        )
 
         # Layout setup
         input_group = QGroupBox("Input Parameters")
@@ -162,7 +184,9 @@ class DroneInterceptWindow(SimulationWindow):
 
         if intercept_possible:
             results = [f"We intercept the drone."]
-            results.append(f"Interception distance: {intercept_distance:.2f} miles away")
+            results.append(
+                f"Interception distance: {intercept_distance:.2f} miles away"
+            )
             results.append(f"Interception time: {intercept_time:.2f} minutes")
             self.result_label.setText("\n".join(results))
             self.suggestion_label.setText("")
@@ -174,7 +198,11 @@ class DroneInterceptWindow(SimulationWindow):
             self.suggestion_label.setText("\n".join(suggestions))
 
         self.update_chart(
-            mins_drone_speed, intercept_distance, intercept_time, intercept_possible, distance_unit
+            mins_drone_speed,
+            intercept_distance,
+            intercept_time,
+            intercept_possible,
+            distance_unit,
         )
 
     def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit):
@@ -216,7 +244,12 @@ class DroneInterceptWindow(SimulationWindow):
         return suggestions
 
     def update_chart(
-        self, mins_drone_speed, intercept_distance, intercept_time, intercept_possible, distance_unit
+        self,
+        mins_drone_speed,
+        intercept_distance,
+        intercept_time,
+        intercept_possible,
+        distance_unit,
     ):
         """
         Update the chart with the new intercept distance
@@ -230,7 +263,8 @@ class DroneInterceptWindow(SimulationWindow):
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")
         max_time = max(
-            self.reaction_time.value() * 2, self.radar_range.value() * 2 / mins_drone_speed
+            self.reaction_time.value() * 2,
+            self.radar_range.value() * 2 / mins_drone_speed,
         )
 
         # Series for radar range
@@ -245,7 +279,7 @@ class DroneInterceptWindow(SimulationWindow):
         drone_series.append(0, 0)
         drone_series.append(max_time, max_time * mins_drone_speed)
         max_distance = max(self.radar_range.value(), mins_drone_speed * max_time)
-        
+
         # Intersect point
         intersect_series = QLineSeries()
         intersect_series.setName("Intersect Point")
@@ -258,8 +292,12 @@ class DroneInterceptWindow(SimulationWindow):
         intercept_series.append(intercept_time, self.radar_range.value())
 
         # Set colors based on intercept possibility
-        radar_series.setPen(QPen(QColor(Qt.cyan) if intercept_possible else QColor(Qt.magenta)))
-        drone_series.setPen(QPen(QColor(Qt.blue) if intercept_possible else QColor(Qt.red)))
+        radar_series.setPen(
+            QPen(QColor(Qt.cyan) if intercept_possible else QColor(Qt.magenta))
+        )
+        drone_series.setPen(
+            QPen(QColor(Qt.blue) if intercept_possible else QColor(Qt.red))
+        )
         intersect_series.setPen(QPen(QColor(Qt.darkGreen), 2, Qt.DashLine))
         intercept_series.setPen(QPen(QColor(Qt.darkGreen), 2, Qt.DashLine))
         if intercept_possible:

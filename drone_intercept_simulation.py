@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
-from unit_converter import UnitConverter
 
 
 class DroneInterceptSimulation(QWidget):
@@ -71,7 +70,7 @@ class DroneInterceptSimulation(QWidget):
         self.our_drone_series = QLineSeries()
         self.our_drone_series.setName("Our Drone")
         self.our_drone_series.setPen(QPen(QColor(Qt.darkBlue), 2, Qt.DashLine))
-        
+
         # Radar range series
         self.radar_range_series = QLineSeries()
         self.radar_range_series.setName("Radar Range")
@@ -112,18 +111,22 @@ class DroneInterceptSimulation(QWidget):
         # Speed of simulation setup
         speed_factor = self.speed_slider.value() / 50.0
         self.time += 0.05 * speed_factor
-        
+
         # Update drone positions
         if self.time > 0:
-            enemy_drone_position = self.radar_range - ((self.drone_speed / 60) * self.time)
+            enemy_drone_position = self.radar_range - (
+                (self.drone_speed / 60) * self.time
+            )
 
             our_drone_position = max(
                 0, (self.drone_speed / 60) * (self.time - self.reaction_time)
             )
         else:
-            enemy_drone_position = self.radar_range + ((self.drone_speed / 60) * abs(self.time))
+            enemy_drone_position = self.radar_range + (
+                (self.drone_speed / 60) * abs(self.time)
+            )
             our_drone_position = 0
-        
+
         # Update series
         self.enemy_drone_series.append(self.time, enemy_drone_position)
         self.our_drone_series.append(self.time, our_drone_position)
@@ -131,12 +134,12 @@ class DroneInterceptSimulation(QWidget):
         # Adjust axes
         self.axis_x.setRange(-self.reaction_time, self.reaction_time * 2)
         self.axis_y.setRange(-self.radar_range, self.starting_y)
-        
+
         # Check for detection
         if enemy_drone_position <= self.radar_range:
             self.radar_range_series.setPen(QPen(QColor(Qt.green), 3))
             self.enemy_drone_series.setPen(QPen(QColor(Qt.magenta), 3))
-            
+
         # Check for our drone launch
         if our_drone_position > 0:
             self.our_drone_series.setPen(QPen(QColor(Qt.blue), 3))

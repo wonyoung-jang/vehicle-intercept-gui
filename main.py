@@ -4,6 +4,21 @@ from car_collision import CarCollisionWindow
 from drone_intercept import DroneInterceptWindow
 
 
+"""
+Design Patterns:
+    Composite: The MainWindow class acts as a composite, containing and
+    managing multiple component windows (CarCollisionWindow and
+    DroneInterceptWindow) through a QTabWidget. This allows treating
+    individual windows and compositions of windows uniformly.
+    
+    Factory Method: The creation of specific window objects
+    (CarCollisionWindow and DroneInterceptWindow) is delegated to
+    their respective classes, adhering to the Factory Method pattern.
+    This allows for easy extension if more simulation types are added
+    in the future.
+"""
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         """

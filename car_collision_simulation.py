@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
-from unit_converter import UnitConverter
 
 
 class CarCollisionSimulation(QWidget):
@@ -20,7 +19,7 @@ class CarCollisionSimulation(QWidget):
         self.speed_car_b = speed_car_b
         self.initial_distance = initial_distance
         self.time = 0
-        
+
         self.init_ui()
 
     def init_ui(self):
@@ -84,7 +83,7 @@ class CarCollisionSimulation(QWidget):
         self.chart.addSeries(self.car_b_series)
         self.chart.addAxis(self.axis_x, Qt.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)
-        
+
         # Attach series to axes
         self.car_a_series.attachAxis(self.axis_x)
         self.car_a_series.attachAxis(self.axis_y)
@@ -104,8 +103,8 @@ class CarCollisionSimulation(QWidget):
 
         # Update car positions
         car_a_position = (self.speed_car_a / 60) * self.time
-        car_b_position = ((self.speed_car_b / 60) * self.time) + self.initial_distance 
-        
+        car_b_position = ((self.speed_car_b / 60) * self.time) + self.initial_distance
+
         print(self.speed_car_a, self.speed_car_b, self.time, self.initial_distance)
         print(car_a_position, car_b_position)
 

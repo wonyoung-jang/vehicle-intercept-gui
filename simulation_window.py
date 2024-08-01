@@ -1,6 +1,24 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 from PySide6.QtCharts import QChartView
 
+"""
+Design Pattern:
+    Template Method Pattern:
+        SimulationWindow (base class/template): Defines the skeleton of the simulation 
+        UI algorithm in its init_ui() method. Declares abstract placeholder 
+        methods to be implemented by subclasses:
+            - create_input_group()
+            - create_result_group()
+            - update_units()
+            - reset_to_default()
+            - start_simulation()
+            - calculate() (implied by its use in init_ui())
+    
+        CarCollisionWindow, DroneInterceptWindow (subclasses/implementation): 
+        Implements the abstract methods defined in SimulationWindow.
+        Provides specific behavior for both simulations.
+"""
+
 
 class SimulationWindow(QWidget):
     """

@@ -15,6 +15,12 @@ from car_collision_simulation import CarCollisionSimulation
 from simulation_window import SimulationWindow
 
 
+"""
+Design Patterns:
+    Template Method: Inherits from SimulationWindow and implements methods.
+"""
+
+
 class CarCollisionWindow(SimulationWindow):
     """
     Original problem wording: Car collision
@@ -43,16 +49,32 @@ class CarCollisionWindow(SimulationWindow):
 
         self.speed_unit_combo = QComboBox()
         self.speed_unit_combo.addItems(
-            ["mph", "km/h", "m/h", "yd/h", "ft/h", 
-             "mpm", "km/min", "m/min", "yd/min", "ft/min", 
-             "mps", "km/s", "m/s", "yd/s", "ft/s"]
+            [
+                "mph",
+                "km/h",
+                "m/h",
+                "yd/h",
+                "ft/h",
+                "mpm",
+                "km/min",
+                "m/min",
+                "yd/min",
+                "ft/min",
+                "mps",
+                "km/s",
+                "m/s",
+                "yd/s",
+                "ft/s",
+            ]
         )
 
         self.initial_distance = QDoubleSpinBox()
         self.initial_distance.setRange(0, 999999.0)
 
         self.distance_unit_combo = QComboBox()
-        self.distance_unit_combo.addItems(["miles", "kilometers", "meters", "yards", "feet"])
+        self.distance_unit_combo.addItems(
+            ["miles", "kilometers", "meters", "yards", "feet"]
+        )
 
         # Layout setup
         input_group = QGroupBox("Input Parameters")
@@ -126,12 +148,12 @@ class CarCollisionWindow(SimulationWindow):
         speed_car_a_mph = UnitConverter.to_miles_per_hour(
             self.speed_car_a.value(), speed_unit
         )
-        
+
         # Calculate the speed of car B in miles per hour
         speed_car_b_mph = UnitConverter.to_miles_per_hour(
             self.speed_car_b.value(), speed_unit
         )
-        
+
         # Calculate the initial distance between the cars in miles
         initial_distance_miles = UnitConverter.to_miles(
             self.initial_distance.value(), distance_unit
@@ -157,7 +179,7 @@ class CarCollisionWindow(SimulationWindow):
         self.result_label.setText(
             f"The cars will collide in {minutes} minutes and {seconds}.{milliseconds} seconds."
         )
-        
+
         # Update the chart
         self.update_chart(time_to_collision_hours, distance_unit)
 
@@ -212,7 +234,7 @@ class CarCollisionWindow(SimulationWindow):
         max_distance = max(
             speed_car_a * max_time, initial_distance + speed_car_b * max_time
         )
-        
+
         # Intersect point
         intersect_series = QLineSeries()
         intersect_series.setName("Intersect Point")
@@ -251,12 +273,12 @@ class CarCollisionWindow(SimulationWindow):
         # Chart setup
         chart = QChart()
         chart.setTitle("Car Collision Visualization")
-        
+
         chart.addSeries(intersect_series)
         chart.addSeries(series_a)
         chart.addSeries(series_b)
         chart.addSeries(collision_series)
-        
+
         chart.addAxis(axis_x, Qt.AlignBottom)
         chart.addAxis(axis_y, Qt.AlignLeft)
 

@@ -76,7 +76,7 @@ class DroneInterceptSimulation(QWidget):
         self.radar_range_series.setName("Radar Range")
         self.radar_range_series.setPen(QPen(QColor(Qt.darkGreen), 2, Qt.DashLine))
         self.radar_range_series.append(-self.reaction_time, self.radar_range)
-        self.radar_range_series.append(self.reaction_time * 2, self.radar_range)
+        self.radar_range_series.append(self.time + self.reaction_time * 2, self.radar_range)
 
         # Set up axes
         self.axis_x = QValueAxis()
@@ -130,10 +130,12 @@ class DroneInterceptSimulation(QWidget):
         # Update series
         self.enemy_drone_series.append(self.time, enemy_drone_position)
         self.our_drone_series.append(self.time, our_drone_position)
+        self.radar_range_series.append(self.time + self.reaction_time * 2, self.radar_range)
 
         # Adjust axes
-        self.axis_x.setRange(-self.reaction_time, self.reaction_time * 2)
+        self.axis_x.setRange(-self.reaction_time, self.time + self.reaction_time * 2)
         self.axis_y.setRange(-self.radar_range, self.starting_y)
+
 
         # Check for detection
         if enemy_drone_position <= self.radar_range:

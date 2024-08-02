@@ -199,7 +199,6 @@ class DroneInterceptWindow(SimulationWindow):
 
         self.update_chart(
             mins_drone_speed,
-            intercept_distance,
             intercept_time,
             intercept_possible,
             distance_unit,
@@ -244,12 +243,7 @@ class DroneInterceptWindow(SimulationWindow):
         return suggestions
 
     def update_chart(
-        self,
-        mins_drone_speed,
-        intercept_distance,
-        intercept_time,
-        intercept_possible,
-        distance_unit,
+        self, mins_drone_speed, intercept_time, intercept_possible, distance_unit,
     ):
         """
         Update the chart with the new intercept distance

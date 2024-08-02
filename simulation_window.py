@@ -42,6 +42,9 @@ class SimulationWindow(QWidget):
         # Input fields group
         self.create_input_group(layout)
 
+        # Problem group
+        self.create_problem_group(layout)
+
         # Result label group
         self.create_result_group(layout)
 
@@ -74,6 +77,18 @@ class SimulationWindow(QWidget):
             NotImplementedError: This method must be implemented by subclasses.
         """
         raise NotImplementedError("Subclasses must implement create_input_group")
+
+    def create_problem_group(self, layout):
+        """
+        Creates the problem group box with a description of the simulation.
+
+        Parameters:
+            layout (QVBoxLayout): The layout to add the problem group box to.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+        """
+        raise NotImplementedError("Subclasses must implement create_problem_group")
 
     def create_result_group(self, layout):
         """

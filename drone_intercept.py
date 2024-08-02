@@ -104,6 +104,36 @@ class DroneInterceptWindow(SimulationWindow):
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
 
+    def create_problem_group(self, layout):
+        """
+        Create the problem group with the problem statement and a button to start the simulation
+
+        Parameters:
+            layout (QVBoxLayout): The layout to add the problem group box to.
+        """
+        # Problem statement
+        radar_range = str(self.radar_range.value())
+        drone_speed = str(self.drone_speed.value())
+        reaction_time = str(self.reaction_time.value())
+        distance_unit = self.distance_unit_combo.currentText()
+        speed_unit = self.speed_unit_combo.currentText()
+
+        problem = (
+            f"Radar intercept capability is {radar_range} {distance_unit}.\n"
+            f"Drones (bad guys = them, good guys = us) both travel at  {drone_speed} {speed_unit}.\n"
+            f"It takes us {reaction_time} minutes to react and get our drone up in the air.\n"
+            "How far away do we intercept the drone?\n"
+            "If we can't, what can we adjust?\n"
+        )
+
+        self.problem_label = QLabel(problem)
+
+        # Layout setup
+        problem_group = QGroupBox("Drone intercept problem")
+        problem_layout = QVBoxLayout(problem_group)
+        problem_layout.addWidget(self.problem_label)
+        layout.addWidget(problem_group)
+
     def create_result_group(self, layout):
         """
         Create the result group with labels for the result and drone speed
@@ -197,12 +227,30 @@ class DroneInterceptWindow(SimulationWindow):
             self.result_label.setText("We can't intercept the drone")
             self.suggestion_label.setText("\n".join(suggestions))
 
+        # Update the chart
         self.update_chart(
             mins_drone_speed,
             intercept_time,
             intercept_possible,
             distance_unit,
         )
+
+        # Update the problem statement
+        radar_range = str(self.radar_range.value())
+        drone_speed = str(self.drone_speed.value())
+        reaction_time = str(self.reaction_time.value())
+        distance_unit = self.distance_unit_combo.currentText()
+        speed_unit = self.speed_unit_combo.currentText()
+
+        problem = (
+            f"Radar intercept capability is {radar_range} {distance_unit}.\n"
+            f"Drones (bad guys = them, good guys = us) both travel at  {drone_speed} {speed_unit}.\n"
+            f"It takes us {reaction_time} minutes to react and get our drone up in the air.\n"
+            "How far away do we intercept the drone?\n"
+            "If we can't, what can we adjust?\n"
+        )
+
+        self.problem_label.setText(problem)
 
     def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit):
         """
@@ -243,7 +291,11 @@ class DroneInterceptWindow(SimulationWindow):
         return suggestions
 
     def update_chart(
-        self, mins_drone_speed, intercept_time, intercept_possible, distance_unit,
+        self,
+        mins_drone_speed,
+        intercept_time,
+        intercept_possible,
+        distance_unit,
     ):
         """
         Update the chart with the new intercept distance

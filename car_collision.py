@@ -91,7 +91,7 @@ class CarCollisionWindow(SimulationWindow):
         self.speed_car_b.setValue(27)
         self.speed_unit_combo.setCurrentIndex(0)
         self.initial_distance.setValue(200)
-        self.distance_unit_combo.setCurrentIndex(2)
+        self.distance_unit_combo.setCurrentIndex(4)
 
         # Signals and slots
         self.speed_car_a.valueChanged.connect(self.validate_and_calculate)
@@ -99,6 +99,34 @@ class CarCollisionWindow(SimulationWindow):
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.initial_distance.valueChanged.connect(self.validate_and_calculate)
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
+
+    def create_problem_group(self, layout):
+        """
+        Create the problem group with the problem statement and a button to start the simulation
+
+        Parameters:
+            layout (QVBoxLayout): The layout to add the problem group box to.
+        """
+        car_a_speed = str(self.speed_car_a.value())
+        car_b_speed = str(self.speed_car_b.value())
+        initial_distance = str(self.initial_distance.value())
+        distance_unit = self.distance_unit_combo.currentText()
+        speed_unit = self.speed_unit_combo.currentText()
+
+        problem = (
+            f"Car A is traveling {car_a_speed} {speed_unit}.\n"
+            f"Car B is traveling {car_b_speed} {speed_unit}.\n"
+            f"Car B is traveling in the same lane {initial_distance} {distance_unit} in front of Car A.\n"
+            "How long until the cars collide?"
+        )
+
+        self.problem_label = QLabel(problem)
+
+        # Layout setup
+        problem_group = QGroupBox("Car collision problem")
+        problem_layout = QVBoxLayout(problem_group)
+        problem_layout.addWidget(self.problem_label)
+        layout.addWidget(problem_group)
 
     def create_result_group(self, layout):
         """
@@ -179,6 +207,22 @@ class CarCollisionWindow(SimulationWindow):
         self.result_label.setText(
             f"The cars will collide in {minutes} minutes and {seconds}.{milliseconds} seconds."
         )
+
+        # Update the problem statement
+        car_a_speed = str(self.speed_car_a.value())
+        car_b_speed = str(self.speed_car_b.value())
+        initial_distance = str(self.initial_distance.value())
+        distance_unit = self.distance_unit_combo.currentText()
+        speed_unit = self.speed_unit_combo.currentText()
+
+        problem = (
+            f"Car A is traveling {car_a_speed} {speed_unit}.\n"
+            f"Car B is traveling {car_b_speed} {speed_unit}.\n"
+            f"Car B is traveling in the same lane {initial_distance} {distance_unit} in front of Car A.\n"
+            "How long until the cars collide?"
+        )
+
+        self.problem_label.setText(problem)
 
         # Update the chart
         self.update_chart(time_to_collision_hours, distance_unit)
@@ -310,7 +354,7 @@ class CarCollisionWindow(SimulationWindow):
         self.speed_car_b.setValue(27)
         self.initial_distance.setValue(200)
         self.speed_unit_combo.setCurrentIndex(0)
-        self.distance_unit_combo.setCurrentIndex(2)
+        self.distance_unit_combo.setCurrentIndex(4)
         self.calculate()
 
     def start_simulation(self):

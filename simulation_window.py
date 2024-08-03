@@ -35,11 +35,12 @@ class SimulationWindow(QWidget):
     # Log initialization
     logging.info("SimulationWindow initialized")
 
-    def __init__(self):
+    def __init__(self, config):
         """
         Initializes the simulation window.
         """
         super().__init__()
+        self.config = config
         self.init_ui()
 
     def init_ui(self):

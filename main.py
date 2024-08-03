@@ -2,6 +2,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget
 from car_collision import CarCollisionWindow
 from drone_intercept import DroneInterceptWindow
+import configparser
 import logging
 
 # Set up logging
@@ -35,17 +36,21 @@ class MainWindow(QMainWindow):
         """
         super().__init__()
         self.setWindowTitle("Vehicle intercept simulator")
-
+        
+        # Load configuration from file
+        self.config = configparser.ConfigParser()
+        self.config.read('config.ini')
+        
         # Create tab widget
         self.tab_widget = QTabWidget()
         self.setCentralWidget(self.tab_widget)
 
         # Create and add 'Drone intercept' tab
-        drone_tab = DroneInterceptWindow()
+        drone_tab = DroneInterceptWindow(self.config)
         self.tab_widget.addTab(drone_tab, "Drone intercept")
 
         # Create and add 'Car collision' tab
-        car_tab = CarCollisionWindow()
+        car_tab = CarCollisionWindow(self.config)
         self.tab_widget.addTab(car_tab, "Car collision")
 
 

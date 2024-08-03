@@ -31,11 +31,12 @@ class CarCollisionWindow(SimulationWindow):
     # Log initialization
     logging.info("CarCollisionWindow initialized")
 
-    def __init__(self):
+    def __init__(self, config):
         """
         Initialize the window
         """
-        super().__init__()
+        super().__init__(config)
+        self.config = config
 
     def create_input_group(self, layout):
         """
@@ -88,11 +89,11 @@ class CarCollisionWindow(SimulationWindow):
         layout.addWidget(input_group)
 
         # Set default values
-        self.speed_car_a.setValue(45)
-        self.speed_car_b.setValue(27)
-        self.speed_unit_combo.setCurrentIndex(0)
-        self.initial_distance.setValue(200)
-        self.distance_unit_combo.setCurrentIndex(4)
+        self.speed_car_a.setValue(float(self.config['CAR_COLLISION']['speed_car_a']))
+        self.speed_car_b.setValue(float(self.config['CAR_COLLISION']['speed_car_b']))
+        self.initial_distance.setValue(float(self.config['CAR_COLLISION']['initial_distance']))
+        self.speed_unit_combo.setCurrentIndex(int(self.config['CAR_COLLISION']['speed_unit']))
+        self.distance_unit_combo.setCurrentIndex(int(self.config['CAR_COLLISION']['distance_unit']))
 
         # Signals and slots
         self.speed_car_a.valueChanged.connect(self.log_car_speed_a)
@@ -397,11 +398,11 @@ class CarCollisionWindow(SimulationWindow):
         logging.debug("reset_to_default called")
 
         # Reset input fields
-        self.speed_car_a.setValue(45)
-        self.speed_car_b.setValue(27)
-        self.initial_distance.setValue(200)
-        self.speed_unit_combo.setCurrentIndex(0)
-        self.distance_unit_combo.setCurrentIndex(4)
+        self.speed_car_a.setValue(float(self.config['CAR_COLLISION']['speed_car_a']))
+        self.speed_car_b.setValue(float(self.config['CAR_COLLISION']['speed_car_b']))
+        self.initial_distance.setValue(float(self.config['CAR_COLLISION']['initial_distance']))
+        self.speed_unit_combo.setCurrentIndex(int(self.config['CAR_COLLISION']['speed_unit']))
+        self.distance_unit_combo.setCurrentIndex(int(self.config['CAR_COLLISION']['distance_unit']))
         self.calculate()
 
     def start_simulation(self):

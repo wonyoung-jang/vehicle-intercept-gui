@@ -2,7 +2,13 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget
 from car_collision import CarCollisionWindow
 from drone_intercept import DroneInterceptWindow
+import logging
 
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(lineno)d - %(message)s",
+)
 
 """
 Design Patterns:
@@ -20,6 +26,9 @@ Design Patterns:
 
 
 class MainWindow(QMainWindow):
+    # Log initialization
+    logging.info("MainWindow initialized")
+
     def __init__(self):
         """
         Main window with two tabs for the two problems

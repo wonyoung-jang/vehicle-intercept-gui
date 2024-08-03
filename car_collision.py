@@ -13,7 +13,13 @@ from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 from car_collision_simulation import CarCollisionSimulation
 from simulation_window import SimulationWindow
+import logging
 
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(lineno)d - %(message)s",
+)
 
 """
 Design Patterns:
@@ -22,13 +28,8 @@ Design Patterns:
 
 
 class CarCollisionWindow(SimulationWindow):
-    """
-    Original problem wording: Car collision
-    - Car A is traveling 45 mph
-    - Car B is traveling 27 mph
-    - Car B is traveling in the same lane 200 feet in front of Car A
-    - How long until the cars collide?
-    """
+    # Log initialization
+    logging.info("CarCollisionWindow initialized")
 
     def __init__(self):
         """
@@ -94,12 +95,48 @@ class CarCollisionWindow(SimulationWindow):
         self.distance_unit_combo.setCurrentIndex(4)
 
         # Signals and slots
+        self.speed_car_a.valueChanged.connect(self.log_car_speed_a)
+        self.speed_car_b.valueChanged.connect(self.log_car_speed_a)
+        self.initial_distance.valueChanged.connect(self.log_initial_distance)
+        self.distance_unit_combo.currentIndexChanged.connect(self.log_distance_unit)
+        self.speed_unit_combo.currentIndexChanged.connect(self.log_speed_unit)
+        
         self.speed_car_a.valueChanged.connect(self.validate_and_calculate)
         self.speed_car_b.valueChanged.connect(self.validate_and_calculate)
-        self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.initial_distance.valueChanged.connect(self.validate_and_calculate)
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
+        self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
 
+    def log_car_speed_a(self):
+        """
+        Logs the value of Car A's speed when it changes.
+        """
+        logging.debug(f"\nCar A speed changed to {self.speed_car_a.value()}")
+
+    def log_initial_distance(self):
+        """
+        Logs the value of the initial distance when it changes.
+        """
+        logging.debug(f"\nInitial distance changed to {self.initial_distance.value()}")
+        
+    def log_car_speed_b(self):
+        """
+        Logs the value of Car B's speed when it changes.
+        """
+        logging.debug(f"\nCar B speed changed to {self.speed_car_b.value()}")
+        
+    def log_distance_unit(self):
+        """
+        Logs the value of the distance unit when it changes.
+        """
+        logging.debug(f"\nDistance unit changed to {self.distance_unit_combo.currentText()}")
+        
+    def log_speed_unit(self):
+        """
+        Logs the value of the speed unit when it changes.
+        """
+        logging.debug(f"\nSpeed unit changed to {self.speed_unit_combo.currentText()}")
+    
     def create_problem_group(self, layout):
         """
         Create the problem group with the problem statement and a button to start the simulation
@@ -148,6 +185,8 @@ class CarCollisionWindow(SimulationWindow):
         """
         Validate the input values and calculate the time to collision
         """
+        logging.debug("validate_and_calculate called")
+
         if not self.validate_input(self.speed_car_a.value(), min_value=0):
             QMessageBox.warning(
                 self, "Invalid Input", "Car A speed must be non-negative."
@@ -169,6 +208,8 @@ class CarCollisionWindow(SimulationWindow):
         """
         Calculate the time to collision and update the result label
         """
+        logging.debug("calculate called")
+
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
 
@@ -235,6 +276,8 @@ class CarCollisionWindow(SimulationWindow):
             time_to_collision (float): The calculated time to collision in hours.
             distance_unit (str): The unit of distance used for the chart (e.g., "miles", "km").
         """
+        logging.debug("update_chart called")
+
         # Calculate the maximum time for the chart
         max_time = time_to_collision * 1.5 if time_to_collision > 0 else 1
 
@@ -343,12 +386,16 @@ class CarCollisionWindow(SimulationWindow):
         """
         Update the units of the input fields and result labels
         """
+        logging.debug("update_units called")
+
         self.calculate()
 
     def reset_to_default(self):
         """
         Reset input fields to default values
         """
+        logging.debug("reset_to_default called")
+
         # Reset input fields
         self.speed_car_a.setValue(45)
         self.speed_car_b.setValue(27)
@@ -361,6 +408,8 @@ class CarCollisionWindow(SimulationWindow):
         """
         Start the car collision simulation
         """
+        logging.debug("start_simulation called")
+
         # Get current values
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()

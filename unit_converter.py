@@ -1,7 +1,19 @@
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(lineno)d - %(message)s",
+)
+
+
 class UnitConverter:
     """
     Utility class for unit conversion
     """
+    
+    # Log initialization
+    logging.info("UnitConverter initialized")
 
     @staticmethod
     def to_miles_per_hour(value, unit):
@@ -15,6 +27,8 @@ class UnitConverter:
         Returns:
             float: The speed value in miles per hour.
         """
+        logging.debug(f"to_miles_per_hour called with value={value}, unit={unit}")
+        
         if unit == "mph":
             return value
         elif unit == "km/h":
@@ -60,6 +74,8 @@ class UnitConverter:
         Returns:
             float: The distance value in miles.
         """
+        logging.debug(f"to_miles called with value={value}, unit={unit}")
+
         if unit == "miles":
             return value
         elif unit == "kilometers":
@@ -85,6 +101,8 @@ class UnitConverter:
         Returns:
             float: The distance value in the specified unit.
         """
+        logging.debug(f"from_miles_to_unit called with value={value}, unit={unit}")
+
         if unit == "miles":
             return value
         elif unit == "kilometers":

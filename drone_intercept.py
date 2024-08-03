@@ -13,7 +13,13 @@ from PySide6.QtGui import QColor, QPen
 from unit_converter import UnitConverter
 from simulation_window import SimulationWindow
 from drone_intercept_simulation import DroneInterceptSimulation
+import logging
 
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(lineno)d - %(message)s",
+)
 
 """
 Design Patterns:
@@ -22,14 +28,8 @@ Design Patterns:
 
 
 class DroneInterceptWindow(SimulationWindow):
-    """
-    Original problem wording: Drone intercept
-    - Radar intercept capability is 2 miles
-    - Drones (bad guys = them, good guys = us) both travel at 30 mph
-    - It takes us 5 minutes to react and get our drone up in the air
-    - How far away do we intercept the drone?
-    - (Follow-up) What can we do to intercept the drone?
-    """
+    # Log initialization
+    logging.info("DroneInterceptWindow initialized")
 
     def __init__(self):
         """
@@ -98,11 +98,47 @@ class DroneInterceptWindow(SimulationWindow):
         self.distance_unit_combo.setCurrentIndex(0)
 
         # Signals and slots
+        self.drone_speed.valueChanged.connect(self.log_drone_speed)
+        self.radar_range.valueChanged.connect(self.log_radar_range)
+        self.reaction_time.valueChanged.connect(self.log_reaction_time)
+        self.speed_unit_combo.currentIndexChanged.connect(self.log_speed_unit)
+        self.distance_unit_combo.currentIndexChanged.connect(self.log_distance_unit)
+        
         self.drone_speed.valueChanged.connect(self.validate_and_calculate)
         self.radar_range.valueChanged.connect(self.validate_and_calculate)
         self.reaction_time.valueChanged.connect(self.validate_and_calculate)
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
+    
+    def log_drone_speed(self):
+        """
+        Logs the value of the drone speed when it changes.
+        """
+        logging.debug(f"\nDrone speed changed to {self.drone_speed.value()}")
+        
+    def log_radar_range(self):
+        """
+        Logs the value of the radar range when it changes.
+        """
+        logging.debug(f"\nRadar range changed to {self.radar_range.value()}")
+        
+    def log_reaction_time(self):
+        """
+        Logs the value of the reaction time when it changes.
+        """
+        logging.debug(f"\nReaction time changed to {self.reaction_time.value()}")
+
+    def log_distance_unit(self):
+        """
+        Logs the value of the distance unit when it changes.
+        """
+        logging.debug(f"\nDistance unit changed to {self.distance_unit_combo.currentText()}")
+
+    def log_speed_unit(self):
+        """
+        Logs the value of the speed unit when it changes.
+        """
+        logging.debug(f"\nSpeed unit changed to {self.speed_unit_combo.currentText()}")
 
     def create_problem_group(self, layout):
         """
@@ -160,6 +196,8 @@ class DroneInterceptWindow(SimulationWindow):
         """
         Validate the input fields and calculate the intercept distance
         """
+        logging.debug("validate_and_calculate called")
+
         if not self.validate_input(self.drone_speed.value(), min_value=0):
             QMessageBox.warning(
                 self, "Invalid Input", "Drone speed must be non-negative."
@@ -181,6 +219,8 @@ class DroneInterceptWindow(SimulationWindow):
         """
         Calculate the intercept distance and update the result labels
         """
+        logging.debug("calculate called")
+
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()
 
@@ -264,6 +304,8 @@ class DroneInterceptWindow(SimulationWindow):
         Returns:
             list: A list of suggestions for intercepting the drone.
         """
+        logging.debug("generate_suggestions called")
+
         suggestions = ["Suggestions:"]
 
         # Decrease drone speed
@@ -306,6 +348,8 @@ class DroneInterceptWindow(SimulationWindow):
             intercept_possible (bool): True if interception is possible, False otherwise.
             distance_unit (str): The unit of distance used for the chart (e.g., "miles", "km").
         """
+        logging.debug("update_chart called")
+
         chart = QChart()
         chart.setTitle("Drone Intercept Visualization")
         max_time = max(
@@ -390,12 +434,16 @@ class DroneInterceptWindow(SimulationWindow):
         """
         Update the units of the input fields and result labels
         """
+        logging.debug("update_units called")
+
         self.calculate()
 
     def reset_to_default(self):
         """
         Reset input fields to default values
         """
+        logging.debug("reset_to_default called")
+
         # Reset input fields
         self.drone_speed.setValue(30)
         self.radar_range.setValue(2)
@@ -408,6 +456,8 @@ class DroneInterceptWindow(SimulationWindow):
         """
         Start the drone intercept simulation
         """
+        logging.debug("start_simulation called")
+
         # Get current values
         speed_unit = self.speed_unit_combo.currentText()
         distance_unit = self.distance_unit_combo.currentText()

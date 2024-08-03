@@ -1,5 +1,12 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 from PySide6.QtCharts import QChartView
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(lineno)d - %(message)s",
+)
 
 """
 Design Pattern:
@@ -24,6 +31,9 @@ class SimulationWindow(QWidget):
     """
     Base class for simulation windows.
     """
+    
+    # Log initialization
+    logging.info("SimulationWindow initialized")
 
     def __init__(self):
         """
@@ -111,6 +121,8 @@ class SimulationWindow(QWidget):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
+        logging.debug(f"update_units called")
+        
         raise NotImplementedError("Subclasses must implement update_units")
 
     def reset_to_default(self):
@@ -121,6 +133,8 @@ class SimulationWindow(QWidget):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
+        logging.debug(f"reset_to_default called")
+
         raise NotImplementedError("Subclasses must implement reset_to_default")
 
     def start_simulation(self):
@@ -131,6 +145,8 @@ class SimulationWindow(QWidget):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
+        logging.debug(f"start_simulation called")
+        
         raise NotImplementedError("Subclasses must implement start_simulation")
 
     def validate_input(self, value, min_value=None, max_value=None):
@@ -145,6 +161,8 @@ class SimulationWindow(QWidget):
         Returns:
             bool: True if the value is valid, False otherwise.
         """
+        logging.debug(f"validate_input called with value={value}, min_value={min_value}, max_value={max_value}")
+
         if min_value is not None and value < min_value:
             return False
         if max_value is not None and value > max_value:

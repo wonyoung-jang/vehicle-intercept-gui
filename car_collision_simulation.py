@@ -2,9 +2,19 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(lineno)d - %(message)s",
+)
 
 
 class CarCollisionSimulation(QWidget):
+    # Log initialization
+    logging.info("CarCollisionSimulation initialized")
+
     def __init__(self, speed_car_a, speed_car_b, initial_distance):
         """
         Initialize the window
@@ -97,6 +107,7 @@ class CarCollisionSimulation(QWidget):
         """
         Update the simulation
         """
+        
         # Speed of simulation setup
         speed_factor = self.speed_slider.value() / 50.0
         self.time += 0.005 * speed_factor

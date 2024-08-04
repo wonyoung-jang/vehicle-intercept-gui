@@ -11,7 +11,7 @@ class UnitConverter:
     """
     Utility class for unit conversion
     """
-    
+
     # Log initialization
     logging.info("UnitConverter initialized")
 
@@ -28,7 +28,7 @@ class UnitConverter:
             float: The speed value in miles per hour.
         """
         logging.debug(f"to_miles_per_hour called with value={value}, unit={unit}")
-        
+
         if unit == "mph":
             return value
         elif unit == "km/h":

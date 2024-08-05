@@ -63,6 +63,53 @@ class UnitConverter:
             raise ValueError(f"Invalid unit: {unit}")
 
     @staticmethod
+    def from_miles_per_hour(value, unit):
+        """
+        Converts a speed value from miles per hour (mph) to various units.
+
+        Parameters:
+            value (float): The speed value to convert.
+            unit (str): The unit of the speed value (e.g., "km/h", "m/s").
+
+        Returns:
+            float: The speed value in given unit.
+        """
+        logging.debug(f"from_miles_per_hour called with value={value}, unit={unit}")
+
+        if unit == "mph":
+            return value
+        elif unit == "km/h":
+            return value * 1.60934
+        elif unit == "m/h":
+            return value * 1609.34
+        elif unit == "yd/h":
+            return value * 1760
+        elif unit == "ft/h":
+            return value * 5280
+        elif unit == "mpm":
+            return value / 60
+        elif unit == "km/min":
+            return value / 60 * 1.60934
+        elif unit == "m/min":
+            return value / 60 * 1609.34
+        elif unit == "yd/min":
+            return value / 60 * 1760
+        elif unit == "ft/min":
+            return value / 60 * 5280
+        elif unit == "mps":
+            return value / 3600
+        elif unit == "km/s":
+            return value / 3600 * 1.60934
+        elif unit == "m/s":
+            return value / 3600 * 1609.34
+        elif unit == "yd/s":
+            return value / 3600 * 1760
+        elif unit == "ft/s":
+            return value / 3600 * 5280
+        else:
+            raise ValueError(f"Invalid unit: {unit}")
+    
+    @staticmethod
     def to_miles(value, unit):
         """
         Converts a distance value from various units to miles.
@@ -90,7 +137,7 @@ class UnitConverter:
             raise ValueError(f"Invalid unit: {unit}")
 
     @staticmethod
-    def from_miles_to_unit(value, unit):
+    def from_miles(value, unit):
         """
         Converts a distance value from miles to various units.
 
@@ -101,7 +148,7 @@ class UnitConverter:
         Returns:
             float: The distance value in the specified unit.
         """
-        logging.debug(f"from_miles_to_unit called with value={value}, unit={unit}")
+        logging.debug(f"from_miles called with value={value}, unit={unit}")
 
         if unit == "miles":
             return value

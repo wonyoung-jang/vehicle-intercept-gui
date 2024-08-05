@@ -92,11 +92,21 @@ class DroneInterceptWindow(SimulationWindow):
         layout.addWidget(input_group)
 
         # Set default values
-        self.drone_speed.setValue(float(self.config['DRONE_INTERCEPT']['drone_speed']))
-        self.radar_range.setValue(float(self.config['DRONE_INTERCEPT']['radar_range']))
-        self.reaction_time.setValue(float(self.config['DRONE_INTERCEPT']['reaction_time']))
-        self.speed_unit_combo.setCurrentIndex(int(self.config['DRONE_INTERCEPT']['speed_unit']))
-        self.distance_unit_combo.setCurrentIndex(int(self.config['DRONE_INTERCEPT']['distance_unit']))
+        self.drone_speed.setValue(float(self.config["DRONE_INTERCEPT"]["drone_speed"]))
+        self.radar_range.setValue(float(self.config["DRONE_INTERCEPT"]["radar_range"]))
+        self.reaction_time.setValue(
+            float(self.config["DRONE_INTERCEPT"]["reaction_time"])
+        )
+        self.speed_unit_combo.setCurrentIndex(
+            int(self.config["DRONE_INTERCEPT"]["speed_unit"])
+        )
+        self.distance_unit_combo.setCurrentIndex(
+            int(self.config["DRONE_INTERCEPT"]["distance_unit"])
+        )
+
+        # Store the current units
+        self.current_speed_unit = self.speed_unit_combo.currentText()
+        self.current_distance_unit = self.distance_unit_combo.currentText()
 
         # Signals and slots
         self.drone_speed.valueChanged.connect(self.log_drone_speed)
@@ -104,25 +114,25 @@ class DroneInterceptWindow(SimulationWindow):
         self.reaction_time.valueChanged.connect(self.log_reaction_time)
         self.speed_unit_combo.currentIndexChanged.connect(self.log_speed_unit)
         self.distance_unit_combo.currentIndexChanged.connect(self.log_distance_unit)
-        
+
         self.drone_speed.valueChanged.connect(self.validate_and_calculate)
         self.radar_range.valueChanged.connect(self.validate_and_calculate)
         self.reaction_time.valueChanged.connect(self.validate_and_calculate)
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
-    
+
     def log_drone_speed(self):
         """
         Logs the value of the drone speed when it changes.
         """
         logging.debug(f"\nDrone speed changed to {self.drone_speed.value()}")
-        
+
     def log_radar_range(self):
         """
         Logs the value of the radar range when it changes.
         """
         logging.debug(f"\nRadar range changed to {self.radar_range.value()}")
-        
+
     def log_reaction_time(self):
         """
         Logs the value of the reaction time when it changes.
@@ -133,7 +143,9 @@ class DroneInterceptWindow(SimulationWindow):
         """
         Logs the value of the distance unit when it changes.
         """
-        logging.debug(f"\nDistance unit changed to {self.distance_unit_combo.currentText()}")
+        logging.debug(
+            f"\nDistance unit changed to {self.distance_unit_combo.currentText()}"
+        )
 
     def log_speed_unit(self):
         """
@@ -240,9 +252,7 @@ class DroneInterceptWindow(SimulationWindow):
         self.drone_speed_label.setText(f"Drone speed (mph): {drone_speed_mph:.4f}")
 
         miles_delay_distance = mins_drone_speed * self.reaction_time.value()
-        delay_distance = UnitConverter.from_miles_to_unit(
-            miles_delay_distance, distance_unit
-        )
+        delay_distance = UnitConverter.from_miles(miles_delay_distance, distance_unit)
         self.delay_distance_label.setText(
             f"Bad drone distance during delay ({distance_unit}): {delay_distance:.4f}"
         )
@@ -324,7 +334,7 @@ class DroneInterceptWindow(SimulationWindow):
         )
 
         # Increase radar range
-        required_radar_range = UnitConverter.from_miles_to_unit(
+        required_radar_range = UnitConverter.from_miles(
             abs(intercept_distance), distance_unit
         )
         suggestions.append(
@@ -437,7 +447,48 @@ class DroneInterceptWindow(SimulationWindow):
         """
         logging.debug("update_units called")
 
+        new_speed_unit = self.speed_unit_combo.currentText()
+        new_distance_unit = self.distance_unit_combo.currentText()
+
+        # Convert speeds if the speed unit has changed
+        if new_speed_unit != self.current_speed_unit:
+            self.drone_speed.setValue(
+                self.convert_speed(
+                    self.drone_speed.value(), self.current_speed_unit, new_speed_unit
+                )
+            )
+
+            self.current_speed_unit = new_speed_unit
+
+        # Convert distance if the distance unit has changed
+        if new_distance_unit != self.current_distance_unit:
+            self.radar_range.setValue(
+                self.convert_distance(
+                    self.radar_range.value(),
+                    self.current_distance_unit,
+                    new_distance_unit,
+                )
+            )
+
+            self.current_distance_unit = new_distance_unit
+
         self.calculate()
+
+    def convert_speed(self, speed, from_unit, to_unit):
+        """
+        Convert speed from one unit to another
+        """
+        logging.debug("convert_speed called")
+        mph = UnitConverter.to_miles_per_hour(speed, from_unit)
+        return UnitConverter.from_miles_per_hour(mph, to_unit)
+
+    def convert_distance(self, distance, from_unit, to_unit):
+        """
+        Convert distance from one unit to another
+        """
+        logging.debug("convert_distance called")
+        miles = UnitConverter.to_miles(distance, from_unit)
+        return UnitConverter.from_miles(miles, to_unit)
 
     def reset_to_default(self):
         """
@@ -446,11 +497,21 @@ class DroneInterceptWindow(SimulationWindow):
         logging.debug("reset_to_default called")
 
         # Reset input fields
-        self.drone_speed.setValue(float(self.config['DRONE_INTERCEPT']['drone_speed']))
-        self.radar_range.setValue(float(self.config['DRONE_INTERCEPT']['radar_range']))
-        self.reaction_time.setValue(float(self.config['DRONE_INTERCEPT']['reaction_time']))
-        self.speed_unit_combo.setCurrentIndex(int(self.config['DRONE_INTERCEPT']['speed_unit']))
-        self.distance_unit_combo.setCurrentIndex(int(self.config['DRONE_INTERCEPT']['distance_unit']))
+        self.speed_unit_combo.setCurrentIndex(
+            int(self.config["DRONE_INTERCEPT"]["speed_unit"])
+        )
+
+        self.distance_unit_combo.setCurrentIndex(
+            int(self.config["DRONE_INTERCEPT"]["distance_unit"])
+        )
+
+        self.drone_speed.setValue(float(self.config["DRONE_INTERCEPT"]["drone_speed"]))
+        self.radar_range.setValue(float(self.config["DRONE_INTERCEPT"]["radar_range"]))
+
+        self.reaction_time.setValue(
+            float(self.config["DRONE_INTERCEPT"]["reaction_time"])
+        )
+
         self.calculate()
 
     def start_simulation(self):

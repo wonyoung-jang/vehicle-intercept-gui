@@ -1,12 +1,11 @@
-import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget
 from car_collision import CarCollisionWindow
 from drone_intercept import DroneInterceptWindow
 import configparser
 import logging
-
-import unittest
+import sys
 import test
+import unittest
 
 # Set up logging
 logging.basicConfig(
@@ -76,5 +75,5 @@ if __name__ == "__main__":
         window.show()
         sys.exit(app.exec())
     else:
-        logging.debug("Some tests failed.")
+        # logging.debug("Some tests failed.")
         sys.exit(1)

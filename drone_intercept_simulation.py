@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
+from simulation import Simulation
 import logging
 
 # Set up logging
@@ -11,11 +12,11 @@ logging.basicConfig(
 )
 
 
-class DroneInterceptSimulation(QWidget):
+class DroneInterceptSimulation(Simulation):
     # Log initialization
     logging.info("DroneInterceptSimulation initialized")
 
-    def __init__(self, drone_speed, radar_range, reaction_time):
+    def __init__(self, problem, drone_speed, radar_range, reaction_time):
         """
         Initialize the window
 
@@ -24,14 +25,13 @@ class DroneInterceptSimulation(QWidget):
             radar_range (float): The radar detection range in miles.
             reaction_time (float): The time it takes for the friendly drone to react and launch, in minutes.
         """
-        super().__init__()
+        super().__init__(problem, drone_speed, radar_range, reaction_time)
+        self.problem = problem
         self.drone_speed = drone_speed
         self.radar_range = radar_range
         self.reaction_time = reaction_time
         self.time = -reaction_time
         self.starting_y = self.radar_range + ((self.drone_speed / 60) * abs(self.time))
-
-        self.init_ui()
 
     def init_ui(self):
         """

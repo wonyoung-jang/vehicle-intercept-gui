@@ -532,6 +532,6 @@ class DroneInterceptWindow(SimulationWindow):
 
         # Create and show simulation window
         self.sim_window = DroneInterceptSimulation(
-            drone_speed_mph, radar_range_miles, self.reaction_time.value()
+            "drone", drone_speed_mph, radar_range_miles, self.reaction_time.value()
         )
         self.sim_window.show()

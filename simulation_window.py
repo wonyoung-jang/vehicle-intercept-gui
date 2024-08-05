@@ -31,7 +31,7 @@ class SimulationWindow(QWidget):
     """
     Base class for simulation windows.
     """
-    
+
     # Log initialization
     logging.info("SimulationWindow initialized")
 
@@ -76,38 +76,29 @@ class SimulationWindow(QWidget):
         self.start_simulation_button.clicked.connect(self.start_simulation)
         layout.addWidget(self.start_simulation_button)
 
-    def create_input_group(self, layout):
+    def create_input_group(self):
         """
         Placeholder method to be implemented by subclasses.
         Creates the input group box with widgets for simulation parameters.
-
-        Parameters:
-            layout (QVBoxLayout): The layout to add the input group box to.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
         raise NotImplementedError("Subclasses must implement create_input_group")
 
-    def create_problem_group(self, layout):
+    def create_problem_group(self):
         """
         Creates the problem group box with a description of the simulation.
-
-        Parameters:
-            layout (QVBoxLayout): The layout to add the problem group box to.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
         raise NotImplementedError("Subclasses must implement create_problem_group")
 
-    def create_result_group(self, layout):
+    def create_result_group(self):
         """
         Placeholder method to be implemented by subclasses.
         Creates the result group box to display the calculated results.
-
-        Parameters:
-            layout (QVBoxLayout): The layout to add the result group box to.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
@@ -122,8 +113,6 @@ class SimulationWindow(QWidget):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
-        logging.debug(f"update_units called")
-        
         raise NotImplementedError("Subclasses must implement update_units")
 
     def reset_to_default(self):
@@ -134,8 +123,6 @@ class SimulationWindow(QWidget):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
-        logging.debug(f"reset_to_default called")
-
         raise NotImplementedError("Subclasses must implement reset_to_default")
 
     def start_simulation(self):
@@ -146,8 +133,6 @@ class SimulationWindow(QWidget):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
-        logging.debug(f"start_simulation called")
-        
         raise NotImplementedError("Subclasses must implement start_simulation")
 
     def validate_input(self, value, min_value=None, max_value=None):
@@ -162,8 +147,6 @@ class SimulationWindow(QWidget):
         Returns:
             bool: True if the value is valid, False otherwise.
         """
-        logging.debug(f"validate_input called with value={value}, min_value={min_value}, max_value={max_value}")
-
         if min_value is not None and value < min_value:
             return False
         if max_value is not None and value > max_value:

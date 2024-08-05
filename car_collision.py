@@ -495,6 +495,6 @@ class CarCollisionWindow(SimulationWindow):
 
         # Create and show simulation window
         self.sim_window = CarCollisionSimulation(
-            speed_car_a_mph, speed_car_b_mph, initial_distance_miles
+            "car", speed_car_a_mph, speed_car_b_mph, initial_distance_miles
         )
         self.sim_window.show()

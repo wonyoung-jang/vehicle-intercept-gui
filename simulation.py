@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
-from PySide6.QtCharts import QChartView
+from PySide6.QtWidgets import QWidget, QVBoxLayout
 import logging
 
 # Set up logging
@@ -32,7 +31,7 @@ class Simulation(QWidget):
     # Log initialization
     logging.info("Simulation initialized")
 
-    def __init__(self, problem, *args):
+    def __init__(self, problem, *args) -> None:
         super().__init__()
         if problem == "car":
             speed_car_a, speed_car_b, initial_distance = args
@@ -54,7 +53,7 @@ class Simulation(QWidget):
 
         self.init_ui()
 
-    def init_ui(self):
+    def init_ui(self) -> None:
         layout = QVBoxLayout()
         self.setLayout(layout)
 
@@ -62,7 +61,7 @@ class Simulation(QWidget):
 
         self.update_simulation()
 
-    def init_chart(self):
+    def init_chart(self) -> None:
         """
         Placeholder method to be implemented by subclasses.
         Initializes the chart.
@@ -72,7 +71,7 @@ class Simulation(QWidget):
         """
         raise NotImplementedError("Subclasses must implement init_chart")
 
-    def update_simulation(self):
+    def update_simulation(self) -> None:
         """
         Placeholder method to be implemented by subclasses.
         Updates the simulation.

@@ -8,7 +8,7 @@ from unit_converter import UnitConverter
 class TestUnitConverter(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         # Redirect logging to a string buffer for testing
         cls.log_capture = StringIO()
         cls.log_handler = logging.StreamHandler(cls.log_capture)
@@ -16,19 +16,19 @@ class TestUnitConverter(unittest.TestCase):
         logging.getLogger().setLevel(logging.DEBUG)
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:
         # Remove the log handler and close the string buffer
         logging.getLogger().removeHandler(cls.log_handler)
         cls.log_capture.close()
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.log_capture.seek(0)
         self.log_capture.truncate()
 
-    def assertAlmostEqualRelative(self, a, b, rel_tol=1e-9, abs_tol=1e-12):
+    def assertAlmostEqualRelative(self, a, b, rel_tol=1e-9, abs_tol=1e-12) -> bool:
         return math.isclose(a, b, rel_tol=rel_tol, abs_tol=abs_tol)
 
-    def test_to_miles_per_hour(self):
+    def test_to_miles_per_hour(self) -> None:
         test_cases = [
             (1, "mph", 1),
             (1, "km/h", 0.621371),
@@ -57,11 +57,11 @@ class TestUnitConverter(unittest.TestCase):
                     f"Expected {expected}, but got {result}",
                 )
 
-    def test_to_miles_per_hour_invalid_unit(self):
+    def test_to_miles_per_hour_invalid_unit(self) -> None:
         with self.assertRaises(ValueError):
             UnitConverter.to_miles_per_hour(1, "invalid_unit")
 
-    def test_from_miles_per_hour(self):
+    def test_from_miles_per_hour(self) -> None:
         test_cases = [
             (1, "mph", 1),
             (1, "km/h", 1.60934),
@@ -90,11 +90,11 @@ class TestUnitConverter(unittest.TestCase):
                     f"Expected {expected}, but got {result}",
                 )
 
-    def test_from_miles_per_hour_invalid_unit(self):
+    def test_from_miles_per_hour_invalid_unit(self) -> None:
         with self.assertRaises(ValueError):
             UnitConverter.from_miles_per_hour(1, "invalid_unit")
 
-    def test_to_miles(self):
+    def test_to_miles(self) -> None:
         test_cases = [
             (1, "miles", 1),
             (1, "kilometers", 0.621371),
@@ -113,11 +113,11 @@ class TestUnitConverter(unittest.TestCase):
                     f"Expected {expected}, but got {result}",
                 )
 
-    def test_to_miles_invalid_unit(self):
+    def test_to_miles_invalid_unit(self) -> None:
         with self.assertRaises(ValueError):
             UnitConverter.to_miles(1, "invalid_unit")
 
-    def test_from_miles(self):
+    def test_from_miles(self) -> None:
         test_cases = [
             (1, "miles", 1),
             (1, "kilometers", 1.60934),
@@ -136,11 +136,11 @@ class TestUnitConverter(unittest.TestCase):
                     f"Expected {expected}, but got {result}",
                 )
 
-    def test_from_miles_invalid_unit(self):
+    def test_from_miles_invalid_unit(self) -> None:
         with self.assertRaises(ValueError):
             UnitConverter.from_miles(1, "invalid_unit")
 
-    def test_logging(self):
+    def test_logging(self) -> None:
         UnitConverter.to_miles_per_hour(1, "km/h")
         log_output = self.log_capture.getvalue()
         self.assertIn("to_miles_per_hour called with value=1, unit=km/h", log_output)

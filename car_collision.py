@@ -31,14 +31,14 @@ class CarCollisionWindow(SimulationWindow):
     # Log initialization
     logging.info("CarCollisionWindow initialized")
 
-    def __init__(self, config):
+    def __init__(self, config) -> None:
         """
         Initialize the window
         """
         super().__init__(config)
         self.config = config
 
-    def create_input_group(self, layout):
+    def create_input_group(self, layout) -> None:
         """
         Create the input group with input fields for car speeds and initial distance
         """
@@ -118,25 +118,25 @@ class CarCollisionWindow(SimulationWindow):
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
 
-    def log_car_speed_a(self):
+    def log_car_speed_a(self) -> None:
         """
         Logs the value of Car A's speed when it changes.
         """
         logging.debug(f"\nCar A speed changed to {self.speed_car_a.value()}")
 
-    def log_initial_distance(self):
+    def log_initial_distance(self) -> None:
         """
         Logs the value of the initial distance when it changes.
         """
         logging.debug(f"\nInitial distance changed to {self.initial_distance.value()}")
 
-    def log_car_speed_b(self):
+    def log_car_speed_b(self) -> None:
         """
         Logs the value of Car B's speed when it changes.
         """
         logging.debug(f"\nCar B speed changed to {self.speed_car_b.value()}")
 
-    def log_distance_unit(self):
+    def log_distance_unit(self) -> None:
         """
         Logs the value of the distance unit when it changes.
         """
@@ -144,13 +144,13 @@ class CarCollisionWindow(SimulationWindow):
             f"\nDistance unit changed to {self.distance_unit_combo.currentText()}"
         )
 
-    def log_speed_unit(self):
+    def log_speed_unit(self) -> None:
         """
         Logs the value of the speed unit when it changes.
         """
         logging.debug(f"\nSpeed unit changed to {self.speed_unit_combo.currentText()}")
 
-    def create_problem_group(self, layout):
+    def create_problem_group(self, layout) -> None:
         """
         Create the problem group with the problem statement and a button to start the simulation
 
@@ -178,7 +178,7 @@ class CarCollisionWindow(SimulationWindow):
         problem_layout.addWidget(self.problem_label)
         layout.addWidget(problem_group)
 
-    def create_result_group(self, layout):
+    def create_result_group(self, layout) -> None:
         """
         Create the group for displaying the result
 
@@ -194,7 +194,7 @@ class CarCollisionWindow(SimulationWindow):
         result_layout.addWidget(self.result_label)
         layout.addWidget(result_group)
 
-    def validate_and_calculate(self):
+    def validate_and_calculate(self) -> None:
         """
         Validate the input values and calculate the time to collision
         """
@@ -217,7 +217,7 @@ class CarCollisionWindow(SimulationWindow):
             return
         self.calculate()
 
-    def calculate(self):
+    def calculate(self) -> None:
         """
         Calculate the time to collision and update the result label
         """
@@ -281,7 +281,7 @@ class CarCollisionWindow(SimulationWindow):
         # Update the chart
         self.update_chart(time_to_collision_hours, distance_unit)
 
-    def update_chart(self, time_to_collision, distance_unit):
+    def update_chart(self, time_to_collision, distance_unit) -> None:
         """
         Update the chart with the new time to collision
 
@@ -395,7 +395,7 @@ class CarCollisionWindow(SimulationWindow):
         # Set chart to view
         self.chart_view.setChart(chart)
 
-    def update_units(self):
+    def update_units(self) -> None:
         """
         Update the units of the input fields and result labels
         """
@@ -434,7 +434,7 @@ class CarCollisionWindow(SimulationWindow):
 
         self.calculate()
 
-    def convert_speed(self, speed, from_unit, to_unit):
+    def convert_speed(self, speed, from_unit, to_unit) -> float:
         """
         Convert speed from one unit to another
         """
@@ -442,7 +442,7 @@ class CarCollisionWindow(SimulationWindow):
         mph = UnitConverter.to_miles_per_hour(speed, from_unit)
         return UnitConverter.from_miles_per_hour(mph, to_unit)
 
-    def convert_distance(self, distance, from_unit, to_unit):
+    def convert_distance(self, distance, from_unit, to_unit) -> float:
         """
         Convert distance from one unit to another
         """
@@ -450,7 +450,7 @@ class CarCollisionWindow(SimulationWindow):
         miles = UnitConverter.to_miles(distance, from_unit)
         return UnitConverter.from_miles(miles, to_unit)
 
-    def reset_to_default(self):
+    def reset_to_default(self) -> None:
         """
         Reset input fields to default values
         """
@@ -474,7 +474,7 @@ class CarCollisionWindow(SimulationWindow):
 
         self.calculate()
 
-    def start_simulation(self):
+    def start_simulation(self) -> None:
         """
         Start the car collision simulation
         """

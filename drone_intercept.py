@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCharts import QChart, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPen
+from typing import List
 from unit_converter import UnitConverter
 from simulation_window import SimulationWindow
 from drone_intercept_simulation import DroneInterceptSimulation
@@ -31,14 +32,14 @@ class DroneInterceptWindow(SimulationWindow):
     # Log initialization
     logging.info("DroneInterceptWindow initialized")
 
-    def __init__(self, config):
+    def __init__(self, config) -> None:
         """
         Initialize the window
         """
         super().__init__(config)
         self.config = config
 
-    def create_input_group(self, layout):
+    def create_input_group(self, layout) -> None:
         """
         Create the input group with input fields for drone speed, radar range, and reaction time
 
@@ -121,25 +122,25 @@ class DroneInterceptWindow(SimulationWindow):
         self.speed_unit_combo.currentIndexChanged.connect(self.update_units)
         self.distance_unit_combo.currentIndexChanged.connect(self.update_units)
 
-    def log_drone_speed(self):
+    def log_drone_speed(self) -> None:
         """
         Logs the value of the drone speed when it changes.
         """
         logging.debug(f"\nDrone speed changed to {self.drone_speed.value()}")
 
-    def log_radar_range(self):
+    def log_radar_range(self) -> None:
         """
         Logs the value of the radar range when it changes.
         """
         logging.debug(f"\nRadar range changed to {self.radar_range.value()}")
 
-    def log_reaction_time(self):
+    def log_reaction_time(self) -> None:
         """
         Logs the value of the reaction time when it changes.
         """
         logging.debug(f"\nReaction time changed to {self.reaction_time.value()}")
 
-    def log_distance_unit(self):
+    def log_distance_unit(self) -> None:
         """
         Logs the value of the distance unit when it changes.
         """
@@ -147,13 +148,13 @@ class DroneInterceptWindow(SimulationWindow):
             f"\nDistance unit changed to {self.distance_unit_combo.currentText()}"
         )
 
-    def log_speed_unit(self):
+    def log_speed_unit(self) -> None:
         """
         Logs the value of the speed unit when it changes.
         """
         logging.debug(f"\nSpeed unit changed to {self.speed_unit_combo.currentText()}")
 
-    def create_problem_group(self, layout):
+    def create_problem_group(self, layout) -> None:
         """
         Create the problem group with the problem statement and a button to start the simulation
 
@@ -183,7 +184,7 @@ class DroneInterceptWindow(SimulationWindow):
         problem_layout.addWidget(self.problem_label)
         layout.addWidget(problem_group)
 
-    def create_result_group(self, layout):
+    def create_result_group(self, layout) -> None:
         """
         Create the result group with labels for the result and drone speed
 
@@ -205,7 +206,7 @@ class DroneInterceptWindow(SimulationWindow):
         result_layout.addWidget(self.suggestion_label)
         layout.addWidget(result_group)
 
-    def validate_and_calculate(self):
+    def validate_and_calculate(self) -> None:
         """
         Validate the input fields and calculate the intercept distance
         """
@@ -228,7 +229,7 @@ class DroneInterceptWindow(SimulationWindow):
             return
         self.calculate()
 
-    def calculate(self):
+    def calculate(self) -> None:
         """
         Calculate the intercept distance and update the result labels
         """
@@ -303,7 +304,7 @@ class DroneInterceptWindow(SimulationWindow):
 
         self.problem_label.setText(problem)
 
-    def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit):
+    def generate_suggestions(self, drone_speed_mph, intercept_distance, distance_unit) -> List[str]:
         """
         Generate suggestions for intercepting the drone
 
@@ -349,7 +350,7 @@ class DroneInterceptWindow(SimulationWindow):
         intercept_time,
         intercept_possible,
         distance_unit,
-    ):
+    ) -> None:
         """
         Update the chart with the new intercept distance
 
@@ -441,7 +442,7 @@ class DroneInterceptWindow(SimulationWindow):
 
         self.chart_view.setChart(chart)
 
-    def update_units(self):
+    def update_units(self) -> None:
         """
         Update the units of the input fields and result labels
         """
@@ -474,7 +475,7 @@ class DroneInterceptWindow(SimulationWindow):
 
         self.calculate()
 
-    def convert_speed(self, speed, from_unit, to_unit):
+    def convert_speed(self, speed, from_unit, to_unit) -> float:
         """
         Convert speed from one unit to another
         """
@@ -482,7 +483,7 @@ class DroneInterceptWindow(SimulationWindow):
         mph = UnitConverter.to_miles_per_hour(speed, from_unit)
         return UnitConverter.from_miles_per_hour(mph, to_unit)
 
-    def convert_distance(self, distance, from_unit, to_unit):
+    def convert_distance(self, distance, from_unit, to_unit) -> float:
         """
         Convert distance from one unit to another
         """
@@ -490,7 +491,7 @@ class DroneInterceptWindow(SimulationWindow):
         miles = UnitConverter.to_miles(distance, from_unit)
         return UnitConverter.from_miles(miles, to_unit)
 
-    def reset_to_default(self):
+    def reset_to_default(self) -> None:
         """
         Reset input fields to default values
         """
@@ -514,7 +515,7 @@ class DroneInterceptWindow(SimulationWindow):
 
         self.calculate()
 
-    def start_simulation(self):
+    def start_simulation(self) -> None:
         """
         Start the drone intercept simulation
         """

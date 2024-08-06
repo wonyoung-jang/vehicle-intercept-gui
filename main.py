@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
     # Log initialization
     logging.info("MainWindow initialized")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Main window with two tabs for the two problems
         """
@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(car_tab, "Car collision")
 
 
-def run_tests():
+def run_tests() -> bool:
     # Create a test suite
     test_suite = unittest.TestLoader().loadTestsFromModule(test)
 

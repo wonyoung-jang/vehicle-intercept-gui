@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
+from PySide6.QtWidgets import QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
@@ -16,7 +16,7 @@ class CarCollisionSimulation(Simulation):
     # Log initialization
     logging.info("CarCollisionSimulation initialized")
 
-    def __init__(self, problem, speed_car_a, speed_car_b, initial_distance):
+    def __init__(self, problem, speed_car_a, speed_car_b, initial_distance) -> None:
         """
         Initialize the window
 
@@ -32,7 +32,7 @@ class CarCollisionSimulation(Simulation):
         self.initial_distance = initial_distance
         self.time = 0
 
-    def init_ui(self):
+    def init_ui(self) -> None:
         """
         Initialize the UI
         """
@@ -66,7 +66,7 @@ class CarCollisionSimulation(Simulation):
         self.timer.timeout.connect(self.update_simulation)
         self.timer.start(50)
 
-    def init_chart(self):
+    def init_chart(self) -> None:
         """
         Initialize the chart
         """
@@ -103,7 +103,7 @@ class CarCollisionSimulation(Simulation):
         # Set chart to view
         self.chart_view.setChart(self.chart)
 
-    def update_simulation(self):
+    def update_simulation(self) -> None:
         """
         Update the simulation
         """

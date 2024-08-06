@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider, QHBoxLayout
+from PySide6.QtWidgets import QVBoxLayout, QLabel, QSlider, QHBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QScatterSeries
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPen
@@ -16,7 +16,7 @@ class DroneInterceptSimulation(Simulation):
     # Log initialization
     logging.info("DroneInterceptSimulation initialized")
 
-    def __init__(self, problem, drone_speed, radar_range, reaction_time):
+    def __init__(self, problem, drone_speed, radar_range, reaction_time) -> None:
         """
         Initialize the window
 
@@ -33,7 +33,7 @@ class DroneInterceptSimulation(Simulation):
         self.time = -reaction_time
         self.starting_y = self.radar_range + ((self.drone_speed / 60) * abs(self.time))
 
-    def init_ui(self):
+    def init_ui(self) -> None:
         """
         Initialize the UI
         """
@@ -67,7 +67,7 @@ class DroneInterceptSimulation(Simulation):
         self.timer.timeout.connect(self.update_simulation)
         self.timer.start(50)
 
-    def init_chart(self):
+    def init_chart(self) -> None:
         """
         Initialize the chart
         """
@@ -114,7 +114,7 @@ class DroneInterceptSimulation(Simulation):
         # Set chart to view
         self.chart_view.setChart(self.chart)
 
-    def update_simulation(self):
+    def update_simulation(self) -> None:
         """
         Update the simulation
         """

@@ -16,7 +16,7 @@ class UnitConverter:
     logging.info("UnitConverter initialized")
 
     @staticmethod
-    def to_miles_per_hour(value, unit) -> float:
+    def to_miles_per_hour(value: float, unit: str) -> float:
         """
         Converts a speed value from various units to miles per hour (mph).
 
@@ -63,7 +63,7 @@ class UnitConverter:
             raise ValueError(f"Invalid unit: {unit}")
 
     @staticmethod
-    def from_miles_per_hour(value, unit) -> float:
+    def from_miles_per_hour(value: float, unit: str) -> float:
         """
         Converts a speed value from miles per hour (mph) to various units.
 
@@ -110,7 +110,7 @@ class UnitConverter:
             raise ValueError(f"Invalid unit: {unit}")
     
     @staticmethod
-    def to_miles(value, unit) -> float:
+    def to_miles(value: float, unit: str) -> float:
         """
         Converts a distance value from various units to miles.
 
@@ -137,7 +137,7 @@ class UnitConverter:
             raise ValueError(f"Invalid unit: {unit}")
 
     @staticmethod
-    def from_miles(value, unit) -> float:
+    def from_miles(value: float, unit: str) -> float:
         """
         Converts a distance value from miles to various units.
 
